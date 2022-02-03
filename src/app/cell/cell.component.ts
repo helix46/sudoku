@@ -9,5 +9,7 @@ import { StructCell } from '../app.component';
 export class CellComponent implements OnInit {
   constructor() {}
   @Input() structCell!: StructCell;
+  @Input() temp!: number;
+  @Input() temp1!: number;
   ngOnInit(): void {}
 }

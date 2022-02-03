@@ -1,5 +1,13 @@
 <div class="container">
-  <div class="row" *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]">
-    <app-cell *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"></app-cell>
+  <div
+    class="column"
+    *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; let a = index"
+  >
+    <div
+      class="row"
+      *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; let b = index"
+    >
+      <app-cell [temp]="a" [temp1]="b"></app-cell>
+    </div>
   </div>
 </div>

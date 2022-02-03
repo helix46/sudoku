@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 export interface StructCell {
+  given: boolean;
   isLarge: boolean;
   large: number;
   smalls: number[];

@@ -1,10 +1,18 @@
 .container {
   display: flex;
   flex-direction: row;
-  border: black 1px solid;
 }
 
 .row {
+  //display: flex;
+  //flex-direction: row;
+  border: black 1px solid;
+  width: 100px;
+  height: 100px;
+}
+
+.column {
   display: flex;
   flex-direction: column;
+  //border: green 1px solid;
 }
