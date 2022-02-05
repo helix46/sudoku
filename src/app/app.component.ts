@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@ngneat/reactive-forms';
 
 export interface StructCell {
   row: number;
   column: number;
   given: boolean;
   isLarge: boolean;
-  large: number;
+  large: number | null;
   smalls: number[];
 }
 @Component({
@@ -16,23 +15,28 @@ export interface StructCell {
 })
 export class AppComponent {
   title = 'sudoku';
-  formGroup!: FormGroup;
-  cellFormControls!: FormControl<StructCell>[][];
+  cells: StructCell[][] = [];
+
+  initialiseRow = (row: number): StructCell[] => {
+    const rowOfCells: StructCell[] = [];
+    for (let column = 0; column < 10; column++) {
+      const structCell: StructCell = {
+        given: false,
+        column,
+        row,
+        large: null,
+        isLarge: true,
+        smalls: [],
+      };
+      rowOfCells.push(structCell);
+    }
+    return rowOfCells;
+  };
 
   constructor() {
     for (let row = 0; row < 10; row++) {
-      const columns: FormControl<StructCell>[] = [];
-      for (let column = 0; column < 10; column++) {
-        const formControl: FormControl<StructCell> =
-          new FormControl<StructCell>({
-            given: false,
-            column,
-            row,
-            large: 0,
-            isLarge: true,
-            smalls: [],
-          });
-      }
+      const columns: StructCell[] = this.initialiseRow(row);
+      this.cells.push(columns);
     }
   }
 }

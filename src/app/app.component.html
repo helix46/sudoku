@@ -1,13 +1,13 @@
 <div class="container">
   <div
     class="column"
-    *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; let column = index"
+    *ngFor="let i of [0, 0, 0, 0, 0, 0, 0, 0, 0]; let column = index"
   >
     <div
       class="row"
-      *ngFor="let i of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; let row = index"
+      *ngFor="let i of [0, 0, 0, 0, 0, 0, 0, 0, 0]; let row = index"
     >
-      <app-cell [row]="row" [column]="column"></app-cell>
+      <app-cell [structCell]="cells[row][column]"></app-cell>
     </div>
   </div>
 </div>

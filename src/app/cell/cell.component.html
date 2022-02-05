@@ -1,6 +1,6 @@
-<div class="cell">
-  <!--  <span [class.given]="structCell.given" *ngif="structCell.isLarge"-->
-  <!--    >{{ structCell.large }}aaaaaaaaaa</span-->
-  <!--  >-->
-  {{ row }} {{ column }}
-</div>
+<button class="cell" (click)="leftClicked()" (contextmenu)="rightClicked()">
+  <span *ngIf="structCell.isLarge" style="font-size: x-large">
+    {{ structCell.large }}</span
+  >
+  <span *ngIf="!structCell.isLarge"> {{ structCell.smalls }}</span>
+</button>
