@@ -7,6 +7,7 @@ export interface StructCell {
   isLarge: boolean;
   large: number | null;
   smalls: number[];
+  focussed: boolean;
 }
 @Component({
   selector: 'app-root',
@@ -27,6 +28,7 @@ export class AppComponent {
         large: null,
         isLarge: true,
         smalls: [],
+        focussed: false,
       };
       rowOfCells.push(structCell);
     }

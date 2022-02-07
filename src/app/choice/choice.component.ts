@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { StructCell } from '../app.component';
 import { MatDialogRef } from '@angular/material/dialog';
 
@@ -6,6 +6,7 @@ import { MatDialogRef } from '@angular/material/dialog';
   selector: 'app-choice',
   templateUrl: './choice.component.html',
   styleUrls: ['./choice.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChoiceComponent implements OnInit {
   data!: StructCell;

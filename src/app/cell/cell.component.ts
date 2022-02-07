@@ -16,11 +16,13 @@ export class CellComponent implements OnInit {
   leftClicked = () => {
     this.structCell.isLarge = true;
     this.openChoice();
+    this.structCell.focussed = true;
   };
 
   rightClicked = () => {
     this.structCell.isLarge = false;
     this.openChoice();
+    this.structCell.focussed = true;
     return false;
   };
 
@@ -41,6 +43,22 @@ export class CellComponent implements OnInit {
           this.structCell = structCell;
         }
       });
+  };
+
+  getBackground = (): string => {
+    if (this.structCell.given) {
+      if (this.structCell.focussed) {
+        return 'darkblue';
+      } else {
+        return 'darkgray';
+      }
+    } else {
+      if (this.structCell.focussed) {
+        return 'lightblue';
+      } else {
+        return 'white';
+      }
+    }
   };
 
   getMatDialogConfig = <T, U>(
