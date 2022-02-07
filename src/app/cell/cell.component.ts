@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Type } from '@angular/core';
+import { Component, Input, OnInit, Output, Type } from '@angular/core';
 import { StructCell } from '../app.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalContainerComponent } from '../modal-container/modal-container.component';
@@ -12,7 +12,7 @@ import { ChoiceComponent } from '../choice/choice.component';
 export class CellComponent implements OnInit {
   constructor(private matDialog: MatDialog) {}
   @Input() structCell!: StructCell;
-
+  @Output() focussed: EventEmitter<null> = new EventEmitter();
   leftClicked = () => {
     this.structCell.isLarge = true;
     this.openChoice();

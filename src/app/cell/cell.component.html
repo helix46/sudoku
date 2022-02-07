@@ -1,6 +1,6 @@
 <button
   class="cell"
-  [style.backgoundColor]="getBackground()"
+  [style.backgroundColor]="getBackground()"
   [style.borderBottomWidth.px]="
     structCell.row === 2 || structCell.row === 5 ? 2 : 1
   "
@@ -15,5 +15,3 @@
   >
   <span *ngIf="!structCell.isLarge"> {{ structCell.smalls }}</span>
 </button>
-
-<!--<span [style.color]="!structAdmin.ProductionMode ? 'red' : 'green'"> ProductionMode: {{structAdmin.ProductionMode}}</span>-->
