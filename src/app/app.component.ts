@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { AppService } from './app.service';
 
 export interface StructCell {
   row: number;
@@ -8,6 +10,7 @@ export interface StructCell {
   large: number | null;
   smalls: number[];
   focussed: boolean;
+  error: boolean;
 }
 @Component({
   selector: 'app-root',
@@ -17,28 +20,21 @@ export interface StructCell {
 export class AppComponent {
   title = 'sudoku';
   cells: StructCell[][] = [];
+  cellsEnteredAreGiven = false;
 
-  initialiseRow = (row: number): StructCell[] => {
-    const rowOfCells: StructCell[] = [];
-    for (let column = 0; column < 10; column++) {
-      const structCell: StructCell = {
-        given: false,
-        column,
-        row,
-        large: null,
-        isLarge: true,
-        smalls: [],
-        focussed: false,
-      };
-      rowOfCells.push(structCell);
+  clearFocus = () => {
+    for (let row = 0; row < 10; row++) {
+      for (let column = 0; column < 10; column++) {
+        this.cells[row][column].focussed = false;
+      }
     }
-    return rowOfCells;
   };
 
-  constructor() {
-    for (let row = 0; row < 10; row++) {
-      const columns: StructCell[] = this.initialiseRow(row);
-      this.cells.push(columns);
-    }
+  enterGiven = (matCheckboxChange: MatCheckboxChange) => {
+    this.cellsEnteredAreGiven = matCheckboxChange.checked;
+  };
+
+  constructor(public appService: AppService) {
+    appService.initialiseCells(this.cells);
   }
 }

@@ -7,7 +7,15 @@
       class="row"
       *ngFor="let i of [0, 0, 0, 0, 0, 0, 0, 0, 0]; let row = index"
     >
-      <app-cell [structCell]="cells[row][column]"></app-cell>
+      <app-cell
+        [cellsEnteredAreGiven]="cellsEnteredAreGiven"
+        [structCell]="cells[row][column]"
+        (focussed)="clearFocus()"
+      ></app-cell>
     </div>
   </div>
 </div>
+<mat-checkbox (change)="enterGiven($event)">Enter given</mat-checkbox> <br />
+<button mat-raised-button (click)="appService.checkForErrors(cells)">
+  Check for errors
+</button>

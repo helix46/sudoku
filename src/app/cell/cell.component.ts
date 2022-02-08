@@ -1,8 +1,20 @@
-import { Component, Input, OnInit, Output, Type } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  Type,
+} from '@angular/core';
 import { StructCell } from '../app.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalContainerComponent } from '../modal-container/modal-container.component';
 import { ChoiceComponent } from '../choice/choice.component';
+
+export interface StructCellModal {
+  structCell: StructCell;
+  isLarge: boolean;
+}
 
 @Component({
   selector: 'app-cell',
@@ -12,26 +24,36 @@ import { ChoiceComponent } from '../choice/choice.component';
 export class CellComponent implements OnInit {
   constructor(private matDialog: MatDialog) {}
   @Input() structCell!: StructCell;
-  @Output() focussed: EventEmitter<null> = new EventEmitter();
+  @Input() cellsEnteredAreGiven = false;
+  @Output() focussed: EventEmitter<void> = new EventEmitter();
+
   leftClicked = () => {
+    this.focussed.emit();
     this.structCell.isLarge = true;
-    this.openChoice();
+    this.openChoice(true);
     this.structCell.focussed = true;
   };
 
   rightClicked = () => {
-    this.structCell.isLarge = false;
-    this.openChoice();
-    this.structCell.focussed = true;
+    if (!this.cellsEnteredAreGiven && !this.structCell.given) {
+      this.focussed.emit();
+      this.structCell.isLarge = false;
+      this.openChoice(false);
+      this.structCell.focussed = true;
+    }
     return false;
   };
 
-  openChoice = () => {
+  openChoice = (isLarge: boolean) => {
+    const structCellModal: StructCellModal = {
+      structCell: this.structCell,
+      isLarge,
+    };
     this.matDialog
       .open(
         ModalContainerComponent,
         this.getMatDialogConfig(
-          this.structCell,
+          structCellModal,
           ChoiceComponent,
           '230px',
           false
@@ -41,6 +63,13 @@ export class CellComponent implements OnInit {
       .subscribe((structCell: StructCell) => {
         if (structCell) {
           this.structCell = structCell;
+          if (this.cellsEnteredAreGiven) {
+            this.structCell.given = true;
+          }
+        } else {
+          if (isLarge) {
+            this.structCell.large = null;
+          }
         }
       });
   };
@@ -48,7 +77,7 @@ export class CellComponent implements OnInit {
   getBackground = (): string => {
     if (this.structCell.given) {
       if (this.structCell.focussed) {
-        return 'darkblue';
+        return 'steelblue';
       } else {
         return 'darkgray';
       }
@@ -59,6 +88,14 @@ export class CellComponent implements OnInit {
         return 'white';
       }
     }
+  };
+
+  displaySmalls = (): string => {
+    let s = '';
+    this.structCell.smalls.forEach((n) => {
+      s += n.toString();
+    });
+    return s;
   };
 
   getMatDialogConfig = <T, U>(
