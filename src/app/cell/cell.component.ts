@@ -10,6 +10,7 @@ import { StructCell } from '../app.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalContainerComponent } from '../modal-container/modal-container.component';
 import { ChoiceComponent } from '../choice/choice.component';
+import { AppService } from '../app.service';
 
 export interface StructCellModal {
   structCell: StructCell;
@@ -22,7 +23,8 @@ export interface StructCellModal {
   styleUrls: ['./cell.component.scss'],
 })
 export class CellComponent implements OnInit {
-  constructor(private matDialog: MatDialog) {}
+  constructor(private matDialog: MatDialog, private appService: AppService) {}
+  @Input() cells!: StructCell[][];
   @Input() structCell!: StructCell;
   @Input() cellsEnteredAreGiven = false;
   @Output() focussed: EventEmitter<void> = new EventEmitter();
@@ -30,7 +32,7 @@ export class CellComponent implements OnInit {
   leftClicked = () => {
     this.focussed.emit();
     this.structCell.isLarge = true;
-    this.openChoice(true);
+    this.openChoice(true, this.cells);
     this.structCell.focussed = true;
   };
 
@@ -38,13 +40,13 @@ export class CellComponent implements OnInit {
     if (!this.cellsEnteredAreGiven && !this.structCell.given) {
       this.focussed.emit();
       this.structCell.isLarge = false;
-      this.openChoice(false);
+      this.openChoice(false, this.cells);
       this.structCell.focussed = true;
     }
     return false;
   };
 
-  openChoice = (isLarge: boolean) => {
+  openChoice = (isLarge: boolean, cells: StructCell[][]) => {
     const structCellModal: StructCellModal = {
       structCell: this.structCell,
       isLarge,
@@ -71,6 +73,7 @@ export class CellComponent implements OnInit {
             this.structCell.large = null;
           }
         }
+        this.appService.checkForErrors(cells);
       });
   };
 
@@ -107,6 +110,7 @@ export class CellComponent implements OnInit {
     panelClass?: string
   ): MatDialogConfig => {
     const matDialogConfig: MatDialogConfig = {
+      position: { top: '0', left: '500px' },
       width,
       data: {
         data,
