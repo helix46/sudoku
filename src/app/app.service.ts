@@ -8,31 +8,34 @@ export class AppService {
   initialiseRow = (row: number): StructCell[] => {
     const rowOfCells: StructCell[] = [];
     for (let column = 0; column < 10; column++) {
-      const structCell: StructCell = {
-        given: false,
-        column,
-        row,
-        large: null,
-        isLarge: true,
-        smalls: [],
-        focussed: false,
-        error: false,
-      };
+      const structCell: StructCell = this.initialiseCell(row, column);
       rowOfCells.push(structCell);
     }
     return rowOfCells;
   };
 
+  initialiseCell = (row: number, column: number): StructCell => {
+    return {
+      given: false,
+      column,
+      row,
+      large: null,
+      smalls: [],
+      focussed: false,
+      error: false,
+    };
+  };
+
   checkRowForDuplicates = (
-    structCell: StructCell,
+    plarge: number | null,
+    pRow: number,
+    pColumn: number,
+    // structCell: StructCell,
     cells: StructCell[][]
   ): boolean => {
     for (let column = 0; column < 10; column++) {
-      const temp = cells[structCell.row][column];
-      if (
-        temp.large === structCell.large &&
-        temp.column !== structCell.column
-      ) {
+      const temp = cells[pRow][column];
+      if (temp.large === plarge && temp.column !== pColumn) {
         return true;
       }
     }
@@ -40,12 +43,14 @@ export class AppService {
   };
 
   checkColumnForDuplicates = (
-    structCell: StructCell,
+    plarge: number | null,
+    pRow: number,
+    pColumn: number,
     cells: StructCell[][]
   ): boolean => {
     for (let row = 0; row < 10; row++) {
-      const temp = cells[row][structCell.column];
-      if (temp.large === structCell.large && temp.row !== structCell.row) {
+      const temp = cells[row][pColumn];
+      if (temp.large === plarge && temp.row !== pRow) {
         return true;
       }
     }
@@ -56,9 +61,25 @@ export class AppService {
     for (let row = 0; row < 10; row++) {
       for (let column = 0; column < 10; column++) {
         cells[row][column].error = this.checkForDuplicate(
-          cells[row][column],
+          cells[row][column].large,
+          row,
+          column,
           cells
         );
+      }
+    }
+  };
+
+  findSmalls = (cells: StructCell[][]) => {
+    for (let row = 0; row < 10; row++) {
+      for (let column = 0; column < 10; column++) {
+        cells[row][column].smalls = [];
+        for (let num = 1; num < 10; num++) {
+          const duplicate = this.checkForDuplicate(num, row, column, cells);
+          if (!duplicate) {
+            cells[row][column].smalls.push(num);
+          }
+        }
       }
     }
   };
@@ -71,30 +92,34 @@ export class AppService {
   };
 
   checkForDuplicate = (
-    structCell: StructCell,
+    large: number | null,
+    row: number,
+    column: number,
     cells: StructCell[][]
   ): boolean => {
-    if (!structCell.large) {
+    if (!large) {
       return false;
     }
 
-    if (this.checkRowForDuplicates(structCell, cells)) {
+    if (this.checkRowForDuplicates(large, row, column, cells)) {
       return true;
     }
 
-    if (this.checkColumnForDuplicates(structCell, cells)) {
+    if (this.checkColumnForDuplicates(large, row, column, cells)) {
       return true;
     }
 
-    return this.blockContainsDuplicate(structCell, cells);
+    return this.blockContainsDuplicate(large, row, column, cells);
   };
 
   blockContainsDuplicate = (
-    structCell: StructCell,
+    plarge: number | null,
+    pRow: number,
+    pColumn: number,
     cells: StructCell[][]
   ): boolean => {
-    const startRowOfBlock = this.getStart(structCell.row);
-    const startColumnOfBlock = this.getStart(structCell.column);
+    const startRowOfBlock = this.getStart(pRow);
+    const startColumnOfBlock = this.getStart(pColumn);
     for (let row = startRowOfBlock; row < startRowOfBlock + 3; row++) {
       for (
         let column = startColumnOfBlock;
@@ -102,9 +127,9 @@ export class AppService {
         column++
       ) {
         if (
-          cells[row][column].large === structCell.large &&
-          cells[row][column].row !== structCell.row &&
-          cells[row][column].column !== structCell.column
+          cells[row][column].large === plarge &&
+          cells[row][column].row !== pRow &&
+          cells[row][column].column !== pColumn
         ) {
           return true;
         }

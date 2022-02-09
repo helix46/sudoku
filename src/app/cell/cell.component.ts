@@ -31,15 +31,17 @@ export class CellComponent implements OnInit {
 
   leftClicked = () => {
     this.focussed.emit();
-    this.structCell.isLarge = true;
     this.openChoice(true, this.cells);
     this.structCell.focussed = true;
   };
 
   rightClicked = () => {
-    if (!this.cellsEnteredAreGiven && !this.structCell.given) {
+    if (
+      !this.cellsEnteredAreGiven &&
+      !this.structCell.given &&
+      !this.structCell.large
+    ) {
       this.focussed.emit();
-      this.structCell.isLarge = false;
       this.openChoice(false, this.cells);
       this.structCell.focussed = true;
     }
@@ -71,9 +73,11 @@ export class CellComponent implements OnInit {
         } else {
           if (isLarge) {
             this.structCell.large = null;
+            // this.structCell.isLarge = false;
           }
         }
         this.appService.checkForErrors(cells);
+        this.appService.findSmalls(cells);
       });
   };
 

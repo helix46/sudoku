@@ -6,7 +6,7 @@ export interface StructCell {
   row: number;
   column: number;
   given: boolean;
-  isLarge: boolean;
+  // isLarge: boolean;
   large: number | null;
   smalls: number[];
   focussed: boolean;
