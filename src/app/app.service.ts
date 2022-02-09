@@ -23,40 +23,42 @@ export class AppService {
     return rowOfCells;
   };
 
-  checkRowForDuplicates = (structCell: StructCell, cells: StructCell[][]) => {
+  checkRowForDuplicates = (
+    structCell: StructCell,
+    cells: StructCell[][]
+  ): boolean => {
     for (let column = 0; column < 10; column++) {
       const temp = cells[structCell.row][column];
       if (
-        structCell.large &&
         temp.large === structCell.large &&
         temp.column !== structCell.column
       ) {
-        structCell.error = true;
+        return true;
       }
     }
+    return false;
   };
 
   checkColumnForDuplicates = (
     structCell: StructCell,
     cells: StructCell[][]
-  ) => {
+  ): boolean => {
     for (let row = 0; row < 10; row++) {
       const temp = cells[row][structCell.column];
-      if (
-        structCell.large &&
-        temp.large === structCell.large &&
-        temp.row !== structCell.row
-      ) {
-        structCell.error = true;
+      if (temp.large === structCell.large && temp.row !== structCell.row) {
+        return true;
       }
     }
+    return false;
   };
 
   checkForErrors = (cells: StructCell[][]) => {
     for (let row = 0; row < 10; row++) {
       for (let column = 0; column < 10; column++) {
-        cells[row][column].error = false;
-        this.checkForDuplicate(cells[row][column], cells);
+        cells[row][column].error = this.checkForDuplicate(
+          cells[row][column],
+          cells
+        );
       }
     }
   };
@@ -68,17 +70,29 @@ export class AppService {
     }
   };
 
-  checkForDuplicate = (structCell: StructCell, cells: StructCell[][]) => {
-    this.checkRowForDuplicates(structCell, cells);
-    this.checkColumnForDuplicates(structCell, cells);
-    if (structCell.row === 0 && structCell.column === 3) {
-      console.log('zzz');
+  checkForDuplicate = (
+    structCell: StructCell,
+    cells: StructCell[][]
+  ): boolean => {
+    if (!structCell.large) {
+      return false;
     }
 
-    this.checkForBlockDuplicates(structCell, cells);
+    if (this.checkRowForDuplicates(structCell, cells)) {
+      return true;
+    }
+
+    if (this.checkColumnForDuplicates(structCell, cells)) {
+      return true;
+    }
+
+    return this.blockContainsDuplicate(structCell, cells);
   };
 
-  checkForBlockDuplicates = (structCell: StructCell, cells: StructCell[][]) => {
+  blockContainsDuplicate = (
+    structCell: StructCell,
+    cells: StructCell[][]
+  ): boolean => {
     const startRowOfBlock = this.getStart(structCell.row);
     const startColumnOfBlock = this.getStart(structCell.column);
     for (let row = startRowOfBlock; row < startRowOfBlock + 3; row++) {
@@ -88,15 +102,15 @@ export class AppService {
         column++
       ) {
         if (
-          structCell.large &&
           cells[row][column].large === structCell.large &&
           cells[row][column].row !== structCell.row &&
           cells[row][column].column !== structCell.column
         ) {
-          structCell.error = true;
+          return true;
         }
       }
     }
+    return false;
   };
 
   getStart = (start: number): number => {
