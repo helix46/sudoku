@@ -2,11 +2,11 @@
   class="cell"
   [style.backgroundColor]="getBackground()"
   [style.color]="structCell.error ? 'red' : 'black'"
-  [style.borderBottomWidth.px]="
-    structCell.row === 2 || structCell.row === 5 ? 2 : 1
+  [style.borderBottomColor]="
+    structCell.row === 2 || structCell.row === 5 ? 'black' : 'lightgrey'
   "
-  [style.borderRightWidth.px]="
-    structCell.column === 2 || structCell.column === 5 ? 2 : 1
+  [style.borderRightColor]="
+    structCell.column === 2 || structCell.column === 5 ? 'black' : 'lightgrey'
   "
   (click)="leftClicked()"
   (contextmenu)="rightClicked()"
@@ -15,6 +15,6 @@
     {{ structCell.large }}</span
   >
   <span *ngIf="!structCell.large" style="word-wrap: anywhere">
-    {{ displaySmalls() }}</span
+    {{ displayPossibles() }}</span
   >
 </button>

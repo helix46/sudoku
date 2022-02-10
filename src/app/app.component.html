@@ -17,6 +17,9 @@
   </div>
 </div>
 <mat-checkbox (change)="enterGiven($event)">Enter given</mat-checkbox> <br />
-<button mat-raised-button (click)="appService.checkForErrors(cells)">
-  Check for errors
+<button mat-raised-button (click)="appService.importHardGame(this.cells)">
+  Import hard game
+</button>
+<button mat-raised-button (click)="appService.findPairsOfPairs(this.cells)">
+  Find pairs of pairs
 </button>

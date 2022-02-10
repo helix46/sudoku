@@ -77,7 +77,7 @@ export class CellComponent implements OnInit {
           }
         }
         this.appService.checkForErrors(cells);
-        this.appService.findSmalls(cells);
+        this.appService.findPossibles(cells);
       });
   };
 
@@ -97,9 +97,9 @@ export class CellComponent implements OnInit {
     }
   };
 
-  displaySmalls = (): string => {
+  displayPossibles = (): string => {
     let s = '';
-    this.structCell.smalls.forEach((n) => {
+    this.structCell.possibles.forEach((n) => {
       s += n.toString();
     });
     return s;

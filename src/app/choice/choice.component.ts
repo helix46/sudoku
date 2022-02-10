@@ -17,27 +17,27 @@ export class ChoiceComponent implements OnInit {
       this.data.structCell.large = num;
       this.matDialogRef.close(this.data.structCell);
     } else {
-      this.addNumberToSmalls(num);
+      this.addNumberToPossibles(num);
     }
   };
 
-  addNumberToSmalls = (num: number) => {
-    const filtered = this.data.structCell.smalls.filter((n) => {
+  addNumberToPossibles = (num: number) => {
+    const filtered = this.data.structCell.possibles.filter((n) => {
       return n === num;
     });
 
     // if number already there remove it, else add it
     if (filtered.length) {
       const temp: number[] = [];
-      this.data.structCell.smalls.forEach((n) => {
+      this.data.structCell.possibles.forEach((n) => {
         if (n !== num) {
           temp.push(n);
         }
       });
-      this.data.structCell.smalls = temp;
+      this.data.structCell.possibles = temp;
     } else {
-      this.data.structCell.smalls.push(num);
-      this.data.structCell.smalls.sort();
+      this.data.structCell.possibles.push(num);
+      this.data.structCell.possibles.sort();
     }
   };
 

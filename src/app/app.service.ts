@@ -20,7 +20,7 @@ export class AppService {
       column,
       row,
       large: null,
-      smalls: [],
+      possibles: [],
       focussed: false,
       error: false,
     };
@@ -70,24 +70,28 @@ export class AppService {
     }
   };
 
-  findSmalls = (cells: StructCell[][]) => {
+  findPossibles = (cells: StructCell[][]) => {
     for (let row = 0; row < 10; row++) {
       for (let column = 0; column < 10; column++) {
-        cells[row][column].smalls = [];
+        cells[row][column].possibles = [];
+        // try numbers 1 to 9 in the cell
         for (let num = 1; num < 10; num++) {
+          //check if any cell in the same row, column or block has this number
           const duplicate = this.checkForDuplicate(num, row, column, cells);
+          // if the number won't cause a duplicate, include it in the possibles
           if (!duplicate) {
-            cells[row][column].smalls.push(num);
-            cells[row][column].smalls.sort();
+            cells[row][column].possibles.push(num);
+            cells[row][column].possibles.sort();
           }
         }
       }
     }
-    // this.findPairsOfPairs(cells);
+    this.findPairsOfPairs(cells);
   };
 
   findPairsOfPairs = (cells: StructCell[][]) => {
     this.findPairsOfPairsInEachRow(cells);
+    this.findPairsOfPairsInEachColumn(cells);
   };
 
   findPairsOfPairsInEachRow = (cells: StructCell[][]) => {
@@ -96,16 +100,31 @@ export class AppService {
     }
   };
 
+  findPairsOfPairsInEachColumn = (cells: StructCell[][]) => {
+    for (let column = 0; column < 10; column++) {
+      const arrayOfCells = this.getColumnOfCells(cells, column);
+      this.findPairsOfPairsInNineCells(arrayOfCells);
+    }
+  };
+
+  getColumnOfCells = (cells: StructCell[][], column: number): StructCell[] => {
+    const ColumnOfCells: StructCell[] = [];
+    for (let row = 0; row < 10; row++) {
+      ColumnOfCells.push(cells[row][column]);
+    }
+    return ColumnOfCells;
+  };
+
   findPairsOfPairsInNineCells = (cells: StructCell[]) => {
     for (let i = 0; i < 10; i++) {
-      // if a cell contains 2 smalls
-      if (cells[i].smalls.length === 2) {
-        const pair = cells[i].smalls;
+      // if a cell contains 2 possibles
+      if (cells[i].possibles.length === 2) {
+        const pair = cells[i].possibles;
         // look at the other cells for the same pair
         for (let j = 0; j < 10; j++) {
           // if there are 2 pairs of pairs
-          if (this.arrayEquals(pair, cells[j].smalls) && i !== j) {
-            // remove the numbers in the shared pair from other smalls
+          if (this.arrayEquals(pair, cells[j].possibles) && i !== j) {
+            // remove the numbers in the shared pair from other possibles
             this.RemoveSharedPairFromNineCells(cells, pair, i, j);
           }
         }
@@ -113,15 +132,15 @@ export class AppService {
     }
   };
 
-  arrayEquals = (pair: number[], smalls: number[]): boolean => {
+  arrayEquals = (pair: number[], possibles: number[]): boolean => {
     if (pair.length !== 2) {
       return false;
     }
-    if (smalls.length !== 2) {
+    if (possibles.length !== 2) {
       return false;
     }
     // assumes both arrays have length 2
-    return pair[0] === smalls[0] && pair[1] === smalls[1];
+    return pair[0] === possibles[0] && pair[1] === possibles[1];
   };
 
   RemoveSharedPairFromNineCells = (
@@ -138,7 +157,7 @@ export class AppService {
   };
 
   RemoveSharedPairFromACell = (structCell: StructCell, pair: number[]) => {
-    const filteredArray = structCell.smalls.filter((num: number) => {
+    const filteredArray = structCell.possibles.filter((num: number) => {
       if (num === pair[0]) {
         return false;
       }
@@ -147,7 +166,7 @@ export class AppService {
       }
       return true;
     });
-    structCell.smalls = filteredArray;
+    structCell.possibles = filteredArray;
   };
 
   initialiseCells = (cells: StructCell[][]) => {
@@ -222,5 +241,76 @@ export class AppService {
     return 0;
   };
 
+  importHardGame = (cells: StructCell[][]) => {
+    const game: number[][] = [
+      [1, 0, 2],
+      [2, 0, 3],
+      [6, 0, 8],
+      [2, 1, 0],
+      [1, 1, 4],
+      [5, 1, 6],
+      [4, 1, 8],
+      [9, 2, 1],
+      [5, 2, 3],
+      [6, 2, 5],
+      [2, 3, 2],
+      [3, 3, 6],
+      [7, 4, 1],
+      [1, 4, 3],
+      [8, 4, 5],
+      [5, 5, 2],
+      [6, 5, 6],
+      [5, 6, 1],
+      [4, 6, 3],
+      [1, 6, 5],
+      [6, 7, 0],
+      [8, 7, 4],
+      [1, 7, 6],
+      [5, 7, 8],
+      [7, 8, 2],
+      [6, 8, 3],
+      [2, 8, 8],
+    ];
+    game.forEach((given) => {
+      cells[given[1]][given[2]].large = given[0];
+      cells[given[1]][given[2]].given = true;
+    });
+    this.findPossibles(cells);
+  };
+
+  importEasyGame = (cells: StructCell[][]) => {
+    const game: number[][] = [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ];
+    game.forEach((given) => {
+      cells[given[1]][given[2]].large = given[0];
+      cells[given[1]][given[2]].given = true;
+    });
+    this.findPossibles(cells);
+  };
   constructor() {}
 }
