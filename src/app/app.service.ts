@@ -78,10 +78,76 @@ export class AppService {
           const duplicate = this.checkForDuplicate(num, row, column, cells);
           if (!duplicate) {
             cells[row][column].smalls.push(num);
+            cells[row][column].smalls.sort();
           }
         }
       }
     }
+    // this.findPairsOfPairs(cells);
+  };
+
+  findPairsOfPairs = (cells: StructCell[][]) => {
+    this.findPairsOfPairsInEachRow(cells);
+  };
+
+  findPairsOfPairsInEachRow = (cells: StructCell[][]) => {
+    for (let row = 0; row < 10; row++) {
+      this.findPairsOfPairsInNineCells(cells[row]);
+    }
+  };
+
+  findPairsOfPairsInNineCells = (cells: StructCell[]) => {
+    for (let i = 0; i < 10; i++) {
+      // if a cell contains 2 smalls
+      if (cells[i].smalls.length === 2) {
+        const pair = cells[i].smalls;
+        // look at the other cells for the same pair
+        for (let j = 0; j < 10; j++) {
+          // if there are 2 pairs of pairs
+          if (this.arrayEquals(pair, cells[j].smalls) && i !== j) {
+            // remove the numbers in the shared pair from other smalls
+            this.RemoveSharedPairFromNineCells(cells, pair, i, j);
+          }
+        }
+      }
+    }
+  };
+
+  arrayEquals = (pair: number[], smalls: number[]): boolean => {
+    if (pair.length !== 2) {
+      return false;
+    }
+    if (smalls.length !== 2) {
+      return false;
+    }
+    // assumes both arrays have length 2
+    return pair[0] === smalls[0] && pair[1] === smalls[1];
+  };
+
+  RemoveSharedPairFromNineCells = (
+    cells: StructCell[],
+    pair: number[],
+    i: number,
+    j: number
+  ) => {
+    for (let k = 0; k < 10; k++) {
+      if (k !== i && k !== j) {
+        this.RemoveSharedPairFromACell(cells[k], pair);
+      }
+    }
+  };
+
+  RemoveSharedPairFromACell = (structCell: StructCell, pair: number[]) => {
+    const filteredArray = structCell.smalls.filter((num: number) => {
+      if (num === pair[0]) {
+        return false;
+      }
+      if (num === pair[1]) {
+        return false;
+      }
+      return true;
+    });
+    structCell.smalls = filteredArray;
   };
 
   initialiseCells = (cells: StructCell[][]) => {
