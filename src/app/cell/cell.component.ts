@@ -12,10 +12,10 @@ import { ModalContainerComponent } from '../modal-container/modal-container.comp
 import { ChoiceComponent } from '../choice/choice.component';
 import { AppService } from '../app.service';
 
-// export interface StructCellModal {
-//   structCell: StructCell;
-//   isLarge: boolean;
-// }
+export interface StructCellModal {
+  structCell: StructCell;
+  isLarge: boolean;
+}
 
 @Component({
   selector: 'app-cell',
@@ -31,36 +31,36 @@ export class CellComponent implements OnInit {
 
   leftClicked = () => {
     this.focussed.emit();
-    this.openChoice(this.cells);
-    // this.openChoice(true, this.cells);
+    //this.openChoice(this.cells);
+    this.openChoice(true, this.cells);
     this.structCell.focussed = true;
   };
 
-  // rightClicked = () => {
-  //   if (
-  //     !this.cellsEnteredAreGiven &&
-  //     !this.structCell.given &&
-  //     !this.structCell.large
-  //   ) {
-  //     this.focussed.emit();
-  //     this.openChoice(false, this.cells);
-  //     this.structCell.focussed = true;
-  //   }
-  //   return false;
-  // };
+  rightClicked = () => {
+    if (
+      !this.cellsEnteredAreGiven &&
+      !this.structCell.given &&
+      !this.structCell.large
+    ) {
+      this.focussed.emit();
+      this.openChoice(false, this.cells);
+      this.structCell.focussed = true;
+    }
+    return false;
+  };
 
-  openChoice = (cells: StructCell[][]) => {
-    //   openChoice = (isLarge: boolean, cells: StructCell[][]) => {
-    // const structCellModal: StructCellModal = {
-    //   structCell: this.structCell,
-    //   isLarge,
-    // };
+  // openChoice = (cells: StructCell[][]) => {
+  openChoice = (isLarge: boolean, cells: StructCell[][]) => {
+    const structCellModal: StructCellModal = {
+      structCell: this.structCell,
+      isLarge,
+    };
     this.matDialog
       .open(
         ModalContainerComponent,
         this.getMatDialogConfig(
-          this.structCell,
-          // structCellModal,
+          //this.structCell,
+          structCellModal,
           ChoiceComponent,
           '230px',
           false
@@ -74,13 +74,12 @@ export class CellComponent implements OnInit {
             this.structCell.given = true;
           }
         } else {
-          // if (isLarge) {
-          this.structCell.large = null;
-          // this.structCell.isLarge = f// alse;
-          // }
+          if (isLarge) {
+            this.structCell.large = null;
+          }
         }
         this.appService.checkForErrors(cells);
-        this.appService.findPossibles(cells);
+        this.appService.processCells(cells);
       });
   };
 
@@ -111,7 +110,6 @@ export class CellComponent implements OnInit {
   getMatDialogConfig = <T, U>(
     data: U,
     component: Type<T>,
-    // component: Type<Component>,
     width: string,
     disableClose: boolean,
     panelClass?: string

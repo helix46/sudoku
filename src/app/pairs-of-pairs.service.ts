@@ -6,36 +6,51 @@ import { UtilitiesService } from './utilities.service';
   providedIn: 'root',
 })
 export class PairsOfPairsService {
-  findPairsOfPairs = (cells: StructCell[][]) => {
-    this.findPairsOfPairsInEachRow(cells);
-    this.findPairsOfPairsInEachColumn(cells);
-    this.findPairsOfPairsInEachBlock(cells);
-  };
-
-  findPairsOfPairsInEachRow = (cells: StructCell[][]) => {
-    for (let row = 0; row < 9; row++) {
-      this.findPairsOfPairsInNineCells(cells[row]);
+  findPairsOfPairs = (cells: StructCell[][]): boolean => {
+    let changeMade = false;
+    if (this.findPairsOfPairsInEachRow(cells)) {
+      changeMade = true;
     }
+    if (this.findPairsOfPairsInEachColumn(cells)) {
+      changeMade = true;
+    }
+    if (this.findPairsOfPairsInEachBlock(cells)) {
+      changeMade = true;
+    }
+    return changeMade;
   };
 
-  findPairsOfPairsInEachColumn = (cells: StructCell[][]) => {
+  findPairsOfPairsInEachRow = (cells: StructCell[][]): boolean => {
+    let changeMade = false;
+    for (let row = 0; row < 9; row++) {
+      changeMade = this.findPairsOfPairsInNineCells(cells[row]);
+    }
+    return changeMade;
+  };
+
+  findPairsOfPairsInEachColumn = (cells: StructCell[][]): boolean => {
+    let changeMade = false;
     for (let column = 0; column < 9; column++) {
       const arrayOfCells = this.utilitiesService.getColumnOfCells(
         cells,
         column
       );
-      this.findPairsOfPairsInNineCells(arrayOfCells);
+      changeMade = this.findPairsOfPairsInNineCells(arrayOfCells);
     }
+    return changeMade;
   };
 
-  findPairsOfPairsInEachBlock = (cells: StructCell[][]) => {
+  findPairsOfPairsInEachBlock = (cells: StructCell[][]): boolean => {
+    let changeMade = false;
     for (let block = 0; block < 9; block++) {
       const arrayOfCells = this.utilitiesService.getBlockOfCells(cells, block);
-      this.findPairsOfPairsInNineCells(arrayOfCells);
+      changeMade = this.findPairsOfPairsInNineCells(arrayOfCells);
     }
+    return changeMade;
   };
 
-  findPairsOfPairsInNineCells = (cells: StructCell[]) => {
+  findPairsOfPairsInNineCells = (cells: StructCell[]): boolean => {
+    let changeMade = false;
     for (let i = 0; i < 9; i++) {
       // if a cell contains 2 possibles
       if (cells[i].large === null && cells[i].possibles.length === 2) {
@@ -46,10 +61,12 @@ export class PairsOfPairsService {
           if (this.arrayEquals(pair, cells[j].possibles) && i !== j) {
             // remove the numbers in the shared pair from other possibles
             this.RemoveSharedPairFromNineCells(cells, pair, i, j);
+            changeMade = true;
           }
         }
       }
     }
+    return changeMade;
   };
 
   RemoveSharedPairFromNineCells = (
@@ -67,6 +84,10 @@ export class PairsOfPairsService {
 
   RemoveSharedPairFromACell = (structCell: StructCell, pair: number[]) => {
     const filteredArray = structCell.possibles.filter((num: number) => {
+      if (structCell.column === 5 && structCell.row === 3) {
+        this.utilitiesService.logCell(structCell, 'RemoveSharedPairFromACell');
+      }
+
       // return structCell.possibles.filter((num: number) => {
       if (num === pair[0]) {
         return false;

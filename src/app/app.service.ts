@@ -3,6 +3,7 @@ import { StructCell } from './app.component';
 import { DuplicatesService } from './duplicates.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
 import { FindSinglePossibleService } from './find-single-possible.service';
+import { UtilitiesService } from './utilities.service';
 
 @Injectable({
   providedIn: 'root',
@@ -49,9 +50,24 @@ export class AppService {
     }
   };
 
+  processCells = (cells: StructCell[][]) => {
+    this.findPossibles;
+    let changeMade = false;
+    if (this.pairsOfPairsService.findPairsOfPairs(cells)) {
+      changeMade = true;
+    }
+
+    if (this.findSinglePossibleService.findSinglePossible(cells)) {
+      changeMade = true;
+    }
+  };
+
   findPossibles = (cells: StructCell[][]) => {
     for (let row = 0; row < 9; row++) {
       for (let column = 0; column < 9; column++) {
+        if (column === 5 && row === 3) {
+          this.utilitiesService.logCell(cells[row][column], 'findPossibles');
+        }
         if (!cells[row][column].large) {
           cells[row][column].possibles = [];
           // try numbers 1 to 9 in the cell
@@ -72,13 +88,12 @@ export class AppService {
         }
       }
     }
-    this.pairsOfPairsService.findPairsOfPairs(cells);
-    this.findSinglePossibleService.findSinglePossible(cells);
   };
 
   constructor(
     private duplicatesService: DuplicatesService,
     private pairsOfPairsService: PairsOfPairsService,
-    private findSinglePossibleService: FindSinglePossibleService
+    private findSinglePossibleService: FindSinglePossibleService,
+    private utilitiesService: UtilitiesService
   ) {}
 }

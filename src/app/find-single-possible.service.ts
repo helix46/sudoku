@@ -6,20 +6,20 @@ import { UtilitiesService } from './utilities.service';
   providedIn: 'root',
 })
 export class FindSinglePossibleService {
-  findSinglePossible = (cells: StructCell[][]) => {
+  findSinglePossible = (cells: StructCell[][]): boolean => {
     //find number in row / col / block that is only possible in one cell
     this.findSinglePossibleInRow(cells);
-    // this.findSinglePossibleInColumn(cells);
-    // this.findSinglePossibleInBlock(cells);
+    this.findSinglePossibleInColumn(cells);
+    this.findSinglePossibleInBlock(cells);
   };
 
-  findSinglePossibleInRow = (cells: StructCell[][]) => {
+  findSinglePossibleInRow = (cells: StructCell[][]): boolean => {
     for (let row = 0; row < 9; row++) {
       this.setSinglePossibleInNineCells(cells[row]);
     }
   };
 
-  findSinglePossibleInColumn = (cells: StructCell[][]) => {
+  findSinglePossibleInColumn = (cells: StructCell[][]): boolean => {
     for (let column = 0; column < 9; column++) {
       const arrayOfCells = this.utilitiesService.getColumnOfCells(
         cells,
@@ -29,14 +29,14 @@ export class FindSinglePossibleService {
     }
   };
 
-  findSinglePossibleInBlock = (cells: StructCell[][]) => {
+  findSinglePossibleInBlock = (cells: StructCell[][]): boolean => {
     for (let block = 0; block < 9; block++) {
       const arrayOfCells = this.utilitiesService.getBlockOfCells(cells, block);
       this.setSinglePossibleInNineCells(arrayOfCells);
     }
   };
 
-  setSinglePossibleInNineCells = (cells: StructCell[]) => {
+  setSinglePossibleInNineCells = (cells: StructCell[]): boolean => {
     // go through numbers 1 - 9
     for (let num = 1; num < 10; num++) {
       let found = false;
@@ -44,6 +44,7 @@ export class FindSinglePossibleService {
       let cellFoundin = 0;
       for (let cell = 0; cell < 9; cell++) {
         if (!cells[cell].large) {
+          const originalPossiblities = cells[cell].possibles;
           cells[cell].possibles.forEach((possible) => {
             if (possible === num) {
               if (found) {

@@ -25,12 +25,12 @@ export class UtilitiesService {
       case 3:
       case 4:
       case 5:
-        startRow = 1;
+        startRow = 3;
         break;
       case 6:
       case 7:
       case 8:
-        startRow = 2;
+        startRow = 6;
         break;
     }
     switch (block) {
@@ -62,6 +62,10 @@ export class UtilitiesService {
     returnArray.push(cells[startRow + 2][startCol + 2]);
 
     return returnArray;
+  };
+
+  logCell = (structCell: StructCell, comment: string) => {
+    console.log(JSON.stringify(structCell), comment);
   };
 
   constructor() {}

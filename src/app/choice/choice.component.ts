@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { StructCell } from '../app.component';
 import { MatDialogRef } from '@angular/material/dialog';
+import { StructCellModal } from '../cell/cell.component';
 // import { StructCellModal } from '../cell/cell.component';
 
 @Component({
@@ -10,38 +11,38 @@ import { MatDialogRef } from '@angular/material/dialog';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChoiceComponent implements OnInit {
-  data!: StructCell;
-  //  data!: StructCellModal;
+  //data!: StructCell;
+  data!: StructCellModal;
 
   clicked = (num: number) => {
-    //    if (this.data.isLarge) {
-    this.data.large = num;
-    this.data.possibles = [num];
-    this.matDialogRef.close(this.data);
-    // } else {
-    //   this.addNumberToPossibles(num);
-    // }
+    if (this.data.isLarge) {
+      this.data.structCell.large = num;
+      this.data.structCell.possibles = [num];
+      this.matDialogRef.close(this.data.structCell);
+    } else {
+      this.addNumberToPossibles(num);
+    }
   };
 
-  // addNumberToPossibles = (num: number) => {
-  //   const filtered = this.data.structCell.possibles.filter((n) => {
-  //     return n === num;
-  //   });
-  //
-  //   // if number already there remove it, else add it
-  //   if (filtered.length) {
-  //     const temp: number[] = [];
-  //     this.data.structCell.possibles.forEach((n) => {
-  //       if (n !== num) {
-  //         temp.push(n);
-  //       }
-  //     });
-  //     this.data.structCell.possibles = temp;
-  //   } else {
-  //     this.data.structCell.possibles.push(num);
-  //     this.data.structCell.possibles.sort();
-  //   }
-  // };
+  addNumberToPossibles = (num: number) => {
+    const filtered = this.data.structCell.possibles.filter((n) => {
+      return n === num;
+    });
+
+    // if number already there remove it, else add it
+    if (filtered.length) {
+      const temp: number[] = [];
+      this.data.structCell.possibles.forEach((n) => {
+        if (n !== num) {
+          temp.push(n);
+        }
+      });
+      this.data.structCell.possibles = temp;
+    } else {
+      this.data.structCell.possibles.push(num);
+      this.data.structCell.possibles.sort();
+    }
+  };
 
   constructor(
     private matDialogRef: MatDialogRef<ChoiceComponent, StructCell>

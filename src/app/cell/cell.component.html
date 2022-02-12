@@ -9,9 +9,8 @@
     structCell.column === 2 || structCell.column === 5 ? 'black' : 'lightgrey'
   "
   (click)="leftClicked()"
+  (contextmenu)="rightClicked()"
 >
-  <!--  (contextmenu)="rightClicked()"-->
-
   <span *ngIf="structCell.large" style="font-size: x-large">
     {{ structCell.large }}</span
   >
