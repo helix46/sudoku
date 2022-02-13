@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StructCell } from './app.component';
-import { AppService } from './app.service';
+import { UtilitiesService } from './utilities.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,13 +13,14 @@ export class DuplicatesService {
     // structCell: StructCell,
     cells: StructCell[][]
   ): boolean => {
-    for (let column = 0; column < 9; column++) {
+    let duplicateFound = false;
+    this.utilitiesService.getArray().forEach((column) => {
       const temp = cells[pRow][column];
       if (temp.large === plarge && temp.column !== pColumn) {
-        return true;
+        duplicateFound = true;
       }
-    }
-    return false;
+    });
+    return duplicateFound;
   };
 
   checkColumnForDuplicates = (
@@ -28,13 +29,14 @@ export class DuplicatesService {
     pColumn: number,
     cells: StructCell[][]
   ): boolean => {
-    for (let row = 0; row < 9; row++) {
+    let found = false;
+    this.utilitiesService.getArray().forEach((row) => {
       const temp = cells[row][pColumn];
       if (temp.large === plarge && temp.row !== pRow) {
-        return true;
+        found = true;
       }
-    }
-    return false;
+    });
+    return found;
   };
 
   checkForDuplicate = (
@@ -102,5 +104,5 @@ export class DuplicatesService {
     return 0;
   };
 
-  constructor() {}
+  constructor(private utilitiesService: UtilitiesService) {}
 }

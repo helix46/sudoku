@@ -3,6 +3,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { AppService } from './app.service';
 import { ImportGameService } from './import-game.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
+import { UtilitiesService } from './utilities.service';
 
 export interface StructCell {
   row: number;
@@ -24,11 +25,11 @@ export class AppComponent {
   cellsEnteredAreGiven = false;
 
   clearFocus = () => {
-    for (let row = 0; row < 9; row++) {
-      for (let column = 0; column < 9; column++) {
+    this.utilitiesService.getArray().forEach((row) => {
+      this.utilitiesService.getArray().forEach((column) => {
         this.cells[row][column].focussed = false;
-      }
-    }
+      });
+    });
   };
 
   enterGiven = (matCheckboxChange: MatCheckboxChange) => {
@@ -38,7 +39,8 @@ export class AppComponent {
   constructor(
     public appService: AppService,
     public importGameService: ImportGameService,
-    public pairsOfPairsService: PairsOfPairsService
+    public pairsOfPairsService: PairsOfPairsService,
+    private utilitiesService: UtilitiesService
   ) {
     appService.initialiseCells(this.cells);
   }

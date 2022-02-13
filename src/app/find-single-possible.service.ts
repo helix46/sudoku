@@ -7,63 +7,87 @@ import { UtilitiesService } from './utilities.service';
 })
 export class FindSinglePossibleService {
   findSinglePossible = (cells: StructCell[][]): boolean => {
+    let changeMade = false;
     //find number in row / col / block that is only possible in one cell
-    this.findSinglePossibleInRow(cells);
-    this.findSinglePossibleInColumn(cells);
-    this.findSinglePossibleInBlock(cells);
+    if (this.findSinglePossibleInRow(cells)) {
+      changeMade = true;
+    }
+    if (this.findSinglePossibleInColumn(cells)) {
+      changeMade = true;
+    }
+    if (this.findSinglePossibleInBlock(cells)) {
+      changeMade = true;
+    }
+    return changeMade;
   };
 
   findSinglePossibleInRow = (cells: StructCell[][]): boolean => {
-    for (let row = 0; row < 9; row++) {
-      this.setSinglePossibleInNineCells(cells[row]);
-    }
+    let changeMade = false;
+    this.utilitiesService.getArray().forEach((row) => {
+      if (this.setSinglePossibleInNineCells(cells[row])) {
+        changeMade = true;
+      }
+    });
+    return changeMade;
   };
 
   findSinglePossibleInColumn = (cells: StructCell[][]): boolean => {
-    for (let column = 0; column < 9; column++) {
+    let changeMade = false;
+    this.utilitiesService.getArray().forEach((column) => {
       const arrayOfCells = this.utilitiesService.getColumnOfCells(
         cells,
         column
       );
-      this.setSinglePossibleInNineCells(arrayOfCells);
-    }
+      if (this.setSinglePossibleInNineCells(arrayOfCells)) {
+        changeMade = true;
+      }
+    });
+    return changeMade;
   };
 
   findSinglePossibleInBlock = (cells: StructCell[][]): boolean => {
-    for (let block = 0; block < 9; block++) {
+    let changeMade = false;
+    this.utilitiesService.getArray().forEach((block) => {
       const arrayOfCells = this.utilitiesService.getBlockOfCells(cells, block);
-      this.setSinglePossibleInNineCells(arrayOfCells);
-    }
+      if (this.setSinglePossibleInNineCells(arrayOfCells)) {
+        changeMade = true;
+      }
+    });
+    return changeMade;
   };
 
   setSinglePossibleInNineCells = (cells: StructCell[]): boolean => {
+    let changeMade = false;
     // go through numbers 1 - 9
-    for (let num = 1; num < 10; num++) {
+    this.utilitiesService.getArray(1).forEach((num) => {
       let found = false;
       let duplicateFound = false;
-      let cellFoundin = 0;
-      for (let cell = 0; cell < 9; cell++) {
-        if (!cells[cell].large) {
-          const originalPossiblities = cells[cell].possibles;
-          cells[cell].possibles.forEach((possible) => {
+      let indexFoundin = 0;
+      this.utilitiesService.getArray().forEach((index) => {
+        if (!cells[index].large) {
+          cells[index].possibles.forEach((possible) => {
             if (possible === num) {
               if (found) {
                 duplicateFound = true;
               } else {
                 found = true;
-                cellFoundin = cell;
+                indexFoundin = index;
               }
             }
           });
         }
-      }
+      });
       // if number only found in the possibles of one cell, then set the possibles to this number
       if (found && !duplicateFound) {
-        if (!cells[cellFoundin].large) {
-          cells[cellFoundin].possibles = [num];
+        if (!cells[indexFoundin].large) {
+          if (cells[indexFoundin].possibles !== [num]) {
+            changeMade = true;
+          }
+          cells[indexFoundin].possibles = [num];
         }
       }
-    }
+    });
+    return changeMade;
   };
 
   constructor(private utilitiesService: UtilitiesService) {}
