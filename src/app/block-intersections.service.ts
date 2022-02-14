@@ -33,48 +33,58 @@ export class BlockIntersectionsService {
     let changeMade = false;
     const startRow = this.utilitiesService.getBlockStartRow(block);
     const startCol = this.utilitiesService.getBlockStartColumn(block);
-    for (let row = 0; row < 3; row++) {
-      let possiblesForRowOfBlock: number[] = [];
+
+    let possiblesForRowOfBlock: number[] = [];
+    for (let row = startRow; row < startRow + 3; row++) {
       // get unique possibles for this row of the block
-      for (let column = 0; column < 3; column++) {
-        const structCell: StructCell = cells[startRow + row][startCol + column];
+      for (let column = startCol; column < startCol + 3; column++) {
+        const structCell: StructCell = cells[row][column];
         this.utilitiesService.addNumberstoUniqueArray(
           possiblesForRowOfBlock,
           structCell.possibles
         );
       }
-      //remove possibles that are in a different row of this block
-      const AllCellsForBlock = this.utilitiesService.getBlockOfCells(
-        cells,
-        block
-      );
+    }
+
+    // remove possibles that are in a different row of this block
+    const AllCellsForBlock = this.utilitiesService.getBlockOfCells(
+      cells,
+      block
+    );
+
+    for (let row = startRow; row < startRow + 3; row++) {
       AllCellsForBlock.forEach((structCell) => {
-        if (structCell.row !== startRow + row) {
+        if (structCell.row !== row && !structCell.large) {
           this.removePossiblesFromArray(
             possiblesForRowOfBlock,
             structCell.possibles
           );
         }
       });
-
-      // remove these possibles from the rest of the row outside the block
-      this.utilitiesService.getArray().forEach((column) => {
-        // if a cell is outside the block and the large has not been chosen
-        if (
-          (column < startCol || column >= startCol + 3) &&
-          !cells[row][column].large
-        ) {
-          if (
-            this.removePossiblesFromArray(
-              cells[row][column].possibles,
-              possiblesForRowOfBlock
-            )
-          ) {
-            changeMade = true;
-          }
-        }
-      });
     }
+
+    if (block === 7) {
+      console.log('');
+    }
+
+    //
+    // // remove these possibles from the rest of the row outside the block
+    // this.utilitiesService.getArray().forEach((column) => {
+    //   // if a cell is outside the block and the large has not been chosen
+    //   if (
+    //     (column < startCol || column >= startCol + 3) &&
+    //     !cells[row][column].large
+    //   ) {
+    //     if (
+    //       this.removePossiblesFromArray(
+    //         cells[row][column].possibles,
+    //         possiblesForRowOfBlock
+    //       )
+    //     ) {
+    //       changeMade = true;
+    //     }
+    //   }
+    // });
 
     return changeMade;
   };
@@ -86,7 +96,7 @@ export class BlockIntersectionsService {
     const initialLength = arrayToRemoveFrom.length;
     numbersToRemove.forEach((numToRemove) => {
       const pos = arrayToRemoveFrom.findIndex((num) => {
-        num === numToRemove;
+        return num === numToRemove;
       });
       // if found
       if (pos !== -1) {
