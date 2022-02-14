@@ -75,9 +75,21 @@ export class UtilitiesService {
     console.log(JSON.stringify(structCell), comment);
   };
 
-  getArray = (start: number = 0) => {
-    const array = new Array(9).fill(start);
-    return array.map((_, i) => i + start);
+  getArray = (startNumber: number = 0, arrayLength = 9) => {
+    const array = new Array(arrayLength).fill(startNumber);
+    return array.map((_, i) => i + startNumber);
+  };
+
+  addNumberstoUniqueArray = (array: number[], numbersToAdd: number[]) => {
+    numbersToAdd.forEach((num) => {
+      const filteredArray = array.filter((arrayNum) => {
+        return arrayNum === num;
+      });
+      // if number to add does not exist in array
+      if (filteredArray.length === 0) {
+        array.push(num);
+      }
+    });
   };
 
   constructor() {}
