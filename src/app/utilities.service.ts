@@ -92,5 +92,39 @@ export class UtilitiesService {
     });
   };
 
+  getUniquePossiblesForBlock = (
+    cells: StructCell[][],
+    block: number
+  ): number[] => {
+    const startRow = this.getBlockStartRow(block);
+    const startCol = this.getBlockStartColumn(block);
+    const UniquePossiblesForBlock: number[] = [];
+    for (let row = startRow; row < startRow + 3; row++) {
+      // get unique possibles for this row of the block
+      for (let column = startCol; column < startCol + 3; column++) {
+        const structCell: StructCell = cells[row][column];
+        this.addNumberstoUniqueArray(
+          UniquePossiblesForBlock,
+          structCell.possibles
+        );
+      }
+    }
+    return UniquePossiblesForBlock;
+  };
+
+  arrayEquals = (pair: number[], possibles: number[]): boolean => {
+    if (pair.length !== possibles.length) {
+      return false;
+    }
+
+    let equals = true;
+    pair.forEach((value, index) => {
+      if (value !== possibles[index]) {
+        equals = false;
+      }
+    });
+    return equals;
+  };
+
   constructor() {}
 }

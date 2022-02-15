@@ -56,18 +56,18 @@ export class AppService {
     let changeMadeFindPairsOfPairs = true;
     let changeMadeFindSinglePossible = true;
     let changeMadeFindBlockIntersections = true;
-    while (
-      changeMadeFindPairsOfPairs &&
-      changeMadeFindSinglePossible &&
-      changeMadeFindBlockIntersections
-    ) {
-      changeMadeFindPairsOfPairs =
-        this.pairsOfPairsService.findPairsOfPairs(cells);
-      changeMadeFindSinglePossible =
-        this.findSinglePossibleService.findSinglePossible(cells);
-      changeMadeFindBlockIntersections =
-        this.blockIntersectionsService.findBlockIntersections(cells);
-    }
+    // while (
+    //   changeMadeFindPairsOfPairs ||
+    //   changeMadeFindSinglePossible ||
+    //   changeMadeFindBlockIntersections
+    // ) {
+    changeMadeFindPairsOfPairs =
+      this.pairsOfPairsService.findPairsOfPairs(cells);
+    changeMadeFindSinglePossible =
+      this.findSinglePossibleService.findSinglePossible(cells);
+    changeMadeFindBlockIntersections =
+      this.blockIntersectionsService.findBlockIntersections(cells);
+    // }
   };
 
   findPossibles = (cells: StructCell[][]) => {

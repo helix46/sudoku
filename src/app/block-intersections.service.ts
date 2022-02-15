@@ -27,21 +27,23 @@ export class BlockIntersectionsService {
   ): boolean => {
     let changeMade = false;
 
-    let possiblesForRowOfBlock: number[] = this.getUniquePossiblesForBlock(
-      cells,
-      block
-    );
+    if (block === 7) {
+      console.log('');
+    }
+
+    let UniquePossiblesForBlock: number[] =
+      this.utilitiesService.getUniquePossiblesForBlock(cells, block);
 
     const startRow = this.utilitiesService.getBlockStartRow(block);
     for (
       let rowToAnalyse = startRow;
-      rowToAnalyse + startRow < 3;
+      rowToAnalyse < startRow + 3;
       rowToAnalyse++
     ) {
       this.analyseBlockRowIntersections(
         cells,
         block,
-        possiblesForRowOfBlock,
+        UniquePossiblesForBlock,
         rowToAnalyse
       );
     }
@@ -71,24 +73,27 @@ export class BlockIntersectionsService {
   analyseBlockRowIntersections = (
     cells: StructCell[][],
     block: number,
-    possiblesForRowOfBlock: number[],
+    UniquePossiblesForBlock: number[],
     rowToAnalyse: number
   ) => {
     // remove possibles that are in a different row of this block
     this.removeDifferentRowPossibles(
       cells,
       block,
-      possiblesForRowOfBlock,
+      UniquePossiblesForBlock,
       rowToAnalyse
     );
 
-    console.log(block, ' ', possiblesForRowOfBlock);
+    console.log(
+      'block: ' + block + ' UniquePossiblesForBlock: ',
+      UniquePossiblesForBlock
+    );
   };
 
   removeDifferentRowPossibles = (
     cells: StructCell[][],
     block: number,
-    possiblesForRowOfBlock: number[],
+    UniquePossiblesForBlock: number[],
     rowToAnalyse: number
   ) => {
     const startRow = this.utilitiesService.getBlockStartRow(block);
@@ -97,37 +102,20 @@ export class BlockIntersectionsService {
       block
     );
 
+    if (block === 7 && rowToAnalyse === 6) {
+      console.log('');
+    }
     //remove possiblitiles
     for (let row = startRow; row < startRow + 3; row++) {
       AllCellsForBlock.forEach((structCell) => {
         if (structCell.row !== rowToAnalyse && !structCell.large) {
           this.removePossiblesFromArray(
-            possiblesForRowOfBlock,
+            UniquePossiblesForBlock,
             structCell.possibles
           );
         }
       });
     }
-  };
-
-  getUniquePossiblesForBlock = (
-    cells: StructCell[][],
-    block: number
-  ): number[] => {
-    const startRow = this.utilitiesService.getBlockStartRow(block);
-    const startCol = this.utilitiesService.getBlockStartColumn(block);
-    const possiblesForRowOfBlock: number[] = [];
-    for (let row = startRow; row < startRow + 3; row++) {
-      // get unique possibles for this row of the block
-      for (let column = startCol; column < startCol + 3; column++) {
-        const structCell: StructCell = cells[row][column];
-        this.utilitiesService.addNumberstoUniqueArray(
-          possiblesForRowOfBlock,
-          structCell.possibles
-        );
-      }
-    }
-    return possiblesForRowOfBlock;
   };
 
   removePossiblesFromArray = (

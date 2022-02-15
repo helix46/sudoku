@@ -80,7 +80,11 @@ export class FindSinglePossibleService {
       // if number only found in the possibles of one cell, then set the possibles to this number
       if (found && !duplicateFound) {
         if (!cells[indexFoundin].large) {
-          if (cells[indexFoundin].possibles !== [num]) {
+          if (
+            !this.utilitiesService.arrayEquals(cells[indexFoundin].possibles, [
+              num,
+            ])
+          ) {
             changeMade = true;
           }
           cells[indexFoundin].possibles = [num];

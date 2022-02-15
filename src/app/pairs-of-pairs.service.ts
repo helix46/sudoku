@@ -23,6 +23,9 @@ export class PairsOfPairsService {
   findPairsOfPairsInEachRow = (cells: StructCell[][]): boolean => {
     let changeMade = false;
     this.utilitiesService.getArray().forEach((row) => {
+      if (row === 5) {
+        console.log('');
+      }
       if (this.findPairsOfPairsInNineCells(cells[row])) {
         changeMade = true;
       }
@@ -62,7 +65,10 @@ export class PairsOfPairsService {
         // look at the other cells for the same pair
         this.utilitiesService.getArray().forEach((j) => {
           // if there are 2 pairs of pairs
-          if (this.arrayEquals(pair, cells[j].possibles) && i !== j) {
+          if (
+            this.utilitiesService.arrayEquals(pair, cells[j].possibles) &&
+            i !== j
+          ) {
             // remove the numbers in the shared pair from other possibles
             this.RemoveSharedPairFromNineCells(cells, pair, i, j);
             changeMade = true;
@@ -87,6 +93,9 @@ export class PairsOfPairsService {
   };
 
   RemoveSharedPairFromACell = (structCell: StructCell, pair: number[]) => {
+    if (structCell.row === 4 && structCell.column === 6) {
+      console.log('');
+    }
     const filteredArray = structCell.possibles.filter((num: number) => {
       if (num === pair[0]) {
         return false;
@@ -94,18 +103,11 @@ export class PairsOfPairsService {
       return num !== pair[1];
     });
     if (!structCell.large) {
+      if (filteredArray.length === 0) {
+        console.log('');
+      }
       structCell.possibles = filteredArray;
     }
-  };
-
-  arrayEquals = (pair: number[], possibles: number[]): boolean => {
-    if (pair.length !== 2) {
-      return false;
-    }
-    if (possibles.length !== 2) {
-      return false;
-    }
-    return pair[0] === possibles[0] && pair[1] === possibles[1];
   };
 
   constructor(private utilitiesService: UtilitiesService) {}
