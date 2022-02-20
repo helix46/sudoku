@@ -1,41 +1,40 @@
 import { Injectable } from '@angular/core';
 import { UtilitiesService } from './utilities.service';
-import {
-  candidateType,
-  digitType,
-  indexType,
-  rowType,
-  StructCell,
-} from './definitions';
+import { digitType, indexType, StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DuplicatesService {
-  checkRowForDuplicates = (
-    cell: StructCell,
-    cells: StructCell[][]
+  checkRowForDigit = (
+    digit: digitType,
+    rowIndex: indexType,
+    cells: StructCell[][],
+    cellToExclude: StructCell
   ): boolean => {
     let duplicateFound = false;
     this.utilitiesService.getIndexArray().forEach((columnIndex) => {
-      const temp = cells[cell.rowID][columnIndex];
-      if (temp.digit === pDigit && temp.columnID !== pColumnIndex) {
+      const temp = cells[rowIndex][columnIndex];
+      if (
+        temp.digit === digit &&
+        temp.columnIndex !== cellToExclude.columnIndex
+      ) {
         duplicateFound = true;
       }
     });
     return duplicateFound;
   };
 
-  checkColumnForDuplicates = (
-    plarge: number | null,
-    pRow: number,
-    pColumn: number,
-    cells: StructCell[][]
+  checkColumnForDigit = (
+    digit: digitType,
+    columnIndex: indexType,
+    cells: StructCell[][],
+    cellToExclude: StructCell
   ): boolean => {
     let found = false;
-    this.utilitiesService.getArray().forEach((row) => {
-      const temp = cells[row][pColumn];
-      if (temp.large === plarge && temp.row !== pRow) {
+    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
+      const temp = cells[rowIndex][columnIndex];
+      if (temp.digit === digit && temp.rowIndex !== cellToExclude.rowIndex) {
         found = true;
       }
     });
@@ -47,15 +46,20 @@ export class DuplicatesService {
       return false;
     }
 
-    if (this.checkRowForDuplicates(cell, cells)) {
+    if (this.checkRowForDigit(cell.digit, cell.rowIndex, cells, cell)) {
       return true;
     }
 
-    if (this.checkColumnForDuplicates(digit, rowIndex, columnIndex, cells)) {
+    if (this.checkColumnForDigit(cell.digit, cell.columnIndex, cells, cell)) {
       return true;
     }
 
-    return this.blockContainsDuplicate(digit, rowIndex, columnIndex, cells);
+    return this.blockContainsDuplicate(
+      cell.digit,
+      rowIndex,
+      columnIndex,
+      cells
+    );
   };
 
   blockContainsDuplicate = (
