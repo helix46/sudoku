@@ -265,5 +265,33 @@ export class UtilitiesService {
     return 0;
   };
 
+  getBlockIndexFromCell = (cell: StructCell): indexType => {
+    if (cell.rowIndex < 3) {
+      if (cell.columnIndex < 3) {
+        return 0;
+      }
+      if (cell.columnIndex < 6) {
+        return 1;
+      }
+      return 2;
+    }
+    if (cell.rowIndex < 6) {
+      if (cell.columnIndex < 3) {
+        return 3;
+      }
+      if (cell.columnIndex < 6) {
+        return 4;
+      }
+      return 5;
+    }
+    if (cell.columnIndex < 3) {
+      return 6;
+    }
+    if (cell.columnIndex < 6) {
+      return 7;
+    }
+    return 8;
+  };
+
   constructor() {}
 }

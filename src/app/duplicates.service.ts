@@ -6,7 +6,7 @@ import { digitType, indexType, StructCell } from './definitions';
   providedIn: 'root',
 })
 export class DuplicatesService {
-  checkRowForDigit = (
+  digitExistsInRow = (
     digit: digitType,
     rowIndex: indexType,
     cells: StructCell[][],
@@ -25,7 +25,7 @@ export class DuplicatesService {
     return duplicateFound;
   };
 
-  checkColumnForDigit = (
+  digitExistsInColumn = (
     digit: digitType,
     columnIndex: indexType,
     cells: StructCell[][],
@@ -46,27 +46,24 @@ export class DuplicatesService {
       return false;
     }
 
-    if (this.checkRowForDigit(cell.digit, cell.rowIndex, cells, cell)) {
+    if (this.digitExistsInRow(cell.digit, cell.rowIndex, cells, cell)) {
       return true;
     }
 
-    if (this.checkColumnForDigit(cell.digit, cell.columnIndex, cells, cell)) {
+    if (this.digitExistsInColumn(cell.digit, cell.columnIndex, cells, cell)) {
       return true;
     }
 
-    return this.blockContainsDuplicate(
-      cell.digit,
-      rowIndex,
-      columnIndex,
-      cells
-    );
+    const blockIndex: indexType =
+      this.utilitiesService.getBlockIndexFromCell(cell);
+    return this.digitExistsInBlock(cell.digit, blockIndex, cells, cell);
   };
 
-  blockContainsDuplicate = (
-    pDigit: digitType,
-    pRowIndex: indexType,
-    pColumnIndex: indexType,
-    cells: StructCell[][]
+  digitExistsInBlock = (
+    digit: digitType,
+    blockIndex: indexType,
+    cells: StructCell[][],
+    cellToExclude: StructCell
   ): boolean => {
     const startRowOfBlock = this.utilitiesService.getStartOfBlock(pRowIndex);
     const startColumnOfBlock =
