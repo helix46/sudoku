@@ -6,14 +6,19 @@ import { PairsOfPairsService } from './pairs-of-pairs.service';
 import { UtilitiesService } from './utilities.service';
 
 export interface StructCell {
-  row: number;
-  column: number;
+  row: rowType;
+  column: columnType;
   given: boolean;
-  large: number | null;
-  possibles: number[];
+  large: possibleType | null;
+  possibles: possibleType[];
   focussed: boolean;
   error: boolean;
 }
+
+export type columnType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export type rowType = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I';
+export type possibleType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

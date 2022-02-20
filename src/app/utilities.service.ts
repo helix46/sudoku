@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { StructCell } from './app.component';
+import { columnType, rowType, StructCell } from './app.component';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UtilitiesService {
-  getColumnOfCells = (cells: StructCell[][], column: number): StructCell[] => {
+  getColumnOfCells = (
+    cells: StructCell[][],
+    column: columnType
+  ): StructCell[] => {
     const ColumnOfCells: StructCell[] = [];
-    this.getArray().forEach((row) => {
+    this.getRowArray().forEach((row) => {
       ColumnOfCells.push(cells[row][column]);
     });
     return ColumnOfCells;
@@ -75,9 +78,60 @@ export class UtilitiesService {
     console.log(JSON.stringify(structCell), comment);
   };
 
-  getArray = (startNumber: number = 0, arrayLength = 9) => {
-    const array = new Array(arrayLength).fill(startNumber);
-    return array.map((_, i) => i + startNumber);
+  getColumnArray = (): columnType[] => {
+    const array: columnType[] = new Array<columnType>(9);
+    return array.map((_, index): columnType => {
+      switch (index) {
+        case 0:
+          return 1;
+        case 1:
+          return 2;
+        case 2:
+          return 3;
+        case 3:
+          return 4;
+        case 4:
+          return 5;
+        case 5:
+          return 6;
+        case 6:
+          return 7;
+        case 7:
+          return 8;
+        case 8:
+          return 9;
+        default:
+          return 1;
+      }
+    });
+  };
+
+  getRowArray = () => {
+    const array: rowType[] = new Array<rowType>(9);
+    return array.map((_, index): rowType => {
+      switch (index) {
+        case 0:
+          return 'A';
+        case 1:
+          return 'B';
+        case 2:
+          return 'C';
+        case 3:
+          return 'D';
+        case 4:
+          return 'E';
+        case 5:
+          return 'F';
+        case 6:
+          return 'G';
+        case 7:
+          return 'H';
+        case 8:
+          return 'I';
+        default:
+          return 'A';
+      }
+    });
   };
 
   addNumberstoUniqueArray = (array: number[], numbersToAdd: number[]) => {

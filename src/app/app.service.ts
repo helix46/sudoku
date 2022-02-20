@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { StructCell } from './app.component';
+import { columnType, rowType, StructCell } from './app.component';
 import { DuplicatesService } from './duplicates.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
 import { FindSinglePossibleService } from './find-single-possible.service';
@@ -17,7 +17,7 @@ export class AppService {
     });
   };
 
-  initialiseRow = (row: number): StructCell[] => {
+  initialiseRow = (row: rowType): StructCell[] => {
     const rowOfCells: StructCell[] = [];
     this.utilitiesService.getArray().forEach((column) => {
       const structCell: StructCell = this.initialiseCell(row, column);
@@ -26,7 +26,7 @@ export class AppService {
     return rowOfCells;
   };
 
-  initialiseCell = (row: number, column: number): StructCell => {
+  initialiseCell = (row: rowType, column: columnType): StructCell => {
     return {
       given: false,
       column,
@@ -56,18 +56,19 @@ export class AppService {
     let changeMadeFindPairsOfPairs = true;
     let changeMadeFindSinglePossible = true;
     let changeMadeFindBlockIntersections = true;
-    // while (
-    //   changeMadeFindPairsOfPairs ||
-    //   changeMadeFindSinglePossible ||
-    //   changeMadeFindBlockIntersections
-    // ) {
-    changeMadeFindPairsOfPairs =
-      this.pairsOfPairsService.findPairsOfPairs(cells);
-    changeMadeFindSinglePossible =
-      this.findSinglePossibleService.findSinglePossible(cells);
-    changeMadeFindBlockIntersections =
-      this.blockIntersectionsService.findBlockIntersections(cells);
-    // }
+    while (
+      changeMadeFindPairsOfPairs //||
+      // changeMadeFindSinglePossible
+      // ||
+      //  changeMadeFindBlockIntersections
+    ) {
+      changeMadeFindPairsOfPairs =
+        this.pairsOfPairsService.findPairsOfPairs(cells);
+      // changeMadeFindSinglePossible =
+      //  this.findSinglePossibleService.findSinglePossible(cells);
+      // changeMadeFindBlockIntersections =
+      //   this.blockIntersectionsService.findBlockIntersections(cells);
+    }
   };
 
   findPossibles = (cells: StructCell[][]) => {
