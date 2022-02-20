@@ -1,84 +1,85 @@
 import { Injectable } from '@angular/core';
-import { columnType, rowType, StructCell } from './app.component';
 import { DuplicatesService } from './duplicates.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
-import { FindSinglePossibleService } from './find-single-possible.service';
+import { FindSingleCandidateService } from './find-single-candidate.service';
 import { UtilitiesService } from './utilities.service';
 import { BlockIntersectionsService } from './block-intersections.service';
+import { columnType, rowType, StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppService {
   initialiseCells = (cells: StructCell[][]) => {
-    this.utilitiesService.getArray().forEach((row) => {
-      const columns: StructCell[] = this.initialiseRow(row);
+    this.utilitiesService.getRowArray().forEach((rowID) => {
+      const columns: StructCell[] = this.initialiseRow(rowID);
       cells.push(columns);
     });
   };
 
-  initialiseRow = (row: rowType): StructCell[] => {
+  initialiseRow = (rowID: rowType): StructCell[] => {
     const rowOfCells: StructCell[] = [];
-    this.utilitiesService.getArray().forEach((column) => {
-      const structCell: StructCell = this.initialiseCell(row, column);
+    this.utilitiesService.getColumnArray().forEach((columnID) => {
+      const structCell: StructCell = this.initialiseCell(rowID, columnID);
       rowOfCells.push(structCell);
     });
     return rowOfCells;
   };
 
-  initialiseCell = (row: rowType, column: columnType): StructCell => {
+  initialiseCell = (rowID: rowType, columnID: columnType): StructCell => {
     return {
       given: false,
-      column,
-      row,
-      large: null,
-      possibles: [],
+      columnID,
+      rowID,
+      digit: '',
+      candidates: [],
       focussed: false,
       error: false,
     };
   };
 
   checkForErrors = (cells: StructCell[][]) => {
-    this.utilitiesService.getArray().forEach((row) => {
-      this.utilitiesService.getArray().forEach((column) => {
-        cells[row][column].error = this.duplicatesService.checkForDuplicate(
-          cells[row][column].large,
-          row,
-          column,
-          cells
-        );
+    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
+      this.utilitiesService.getIndexArray().forEach((columnIndex) => {
+        cells[rowIndex][columnIndex].error =
+          this.duplicatesService.checkForDuplicate(
+            cells[rowIndex][columnIndex].digit,
+            rowIndex,
+            columnIndex,
+            cells
+          );
       });
     });
   };
 
   processCells = (cells: StructCell[][]) => {
-    this.findPossibles(cells);
+    this.findCandidates(cells);
     let changeMadeFindPairsOfPairs = true;
-    let changeMadeFindSinglePossible = true;
+    let changeMadeFindSingleCandidate = true;
     let changeMadeFindBlockIntersections = true;
     while (
       changeMadeFindPairsOfPairs //||
-      // changeMadeFindSinglePossible
+      // changeMadeFindSingleCandidate
       // ||
       //  changeMadeFindBlockIntersections
     ) {
       changeMadeFindPairsOfPairs =
         this.pairsOfPairsService.findPairsOfPairs(cells);
-      // changeMadeFindSinglePossible =
-      //  this.findSinglePossibleService.findSinglePossible(cells);
+      // changeMadeFindSingleCandidate =
+      //  this.findSingleCandidateService.findSingleCandidate(cells);
       // changeMadeFindBlockIntersections =
       //   this.blockIntersectionsService.findBlockIntersections(cells);
     }
   };
 
-  findPossibles = (cells: StructCell[][]) => {
+  findCandidates = (cells: StructCell[][]) => {
     this.utilitiesService.getArray().forEach((row) => {
       this.utilitiesService.getArray().forEach((column) => {
         if (column === 5 && row === 3) {
-          this.utilitiesService.logCell(cells[row][column], 'findPossibles');
+          this.utilitiesService.logCell(cells[row][column], 'findCandidates');
         }
         if (!cells[row][column].large) {
-          cells[row][column].possibles = [];
+          cells[row][column].candidates = [];
           // try numbers 1 to 9 in the cell
           this.utilitiesService.getArray(1).forEach((num) => {
             //check if any cell in the same row, column or block has this number
@@ -88,10 +89,10 @@ export class AppService {
               column,
               cells
             );
-            // if the number won't cause a duplicate, include it in the possibles
+            // if the number won't cause a duplicate, include it in the candidates
             if (!duplicate) {
-              cells[row][column].possibles.push(num);
-              cells[row][column].possibles.sort();
+              cells[row][column].candidates.push(num);
+              cells[row][column].candidates.sort();
             }
           });
         }
@@ -102,7 +103,7 @@ export class AppService {
   constructor(
     private duplicatesService: DuplicatesService,
     private pairsOfPairsService: PairsOfPairsService,
-    private findSinglePossibleService: FindSinglePossibleService,
+    private findSingleCandidateService: FindSingleCandidateService,
     private utilitiesService: UtilitiesService,
     private blockIntersectionsService: BlockIntersectionsService
   ) {}

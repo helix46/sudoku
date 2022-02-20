@@ -1,22 +1,25 @@
 import { Injectable } from '@angular/core';
-import { StructCell } from './app.component';
 import { UtilitiesService } from './utilities.service';
+import {
+  candidateType,
+  digitType,
+  indexType,
+  rowType,
+  StructCell,
+} from './definitions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DuplicatesService {
   checkRowForDuplicates = (
-    plarge: number | null,
-    pRow: number,
-    pColumn: number,
-    // structCell: StructCell,
+    cell: StructCell,
     cells: StructCell[][]
   ): boolean => {
     let duplicateFound = false;
-    this.utilitiesService.getArray().forEach((column) => {
-      const temp = cells[pRow][column];
-      if (temp.large === plarge && temp.column !== pColumn) {
+    this.utilitiesService.getIndexArray().forEach((columnIndex) => {
+      const temp = cells[cell.rowID][columnIndex];
+      if (temp.digit === pDigit && temp.columnID !== pColumnIndex) {
         duplicateFound = true;
       }
     });
@@ -39,35 +42,31 @@ export class DuplicatesService {
     return found;
   };
 
-  checkForDuplicate = (
-    large: number | null,
-    row: number,
-    column: number,
-    cells: StructCell[][]
-  ): boolean => {
-    if (!large) {
+  checkForDuplicate = (cell: StructCell, cells: StructCell[][]): boolean => {
+    if (cell.digit === '') {
       return false;
     }
 
-    if (this.checkRowForDuplicates(large, row, column, cells)) {
+    if (this.checkRowForDuplicates(cell, cells)) {
       return true;
     }
 
-    if (this.checkColumnForDuplicates(large, row, column, cells)) {
+    if (this.checkColumnForDuplicates(digit, rowIndex, columnIndex, cells)) {
       return true;
     }
 
-    return this.blockContainsDuplicate(large, row, column, cells);
+    return this.blockContainsDuplicate(digit, rowIndex, columnIndex, cells);
   };
 
   blockContainsDuplicate = (
-    plarge: number | null,
-    pRow: number,
-    pColumn: number,
+    pDigit: digitType,
+    pRowIndex: indexType,
+    pColumnIndex: indexType,
     cells: StructCell[][]
   ): boolean => {
-    const startRowOfBlock = this.getStart(pRow);
-    const startColumnOfBlock = this.getStart(pColumn);
+    const startRowOfBlock = this.utilitiesService.getStartOfBlock(pRowIndex);
+    const startColumnOfBlock =
+      this.utilitiesService.getStartOfBlock(pColumnIndex);
     for (let row = startRowOfBlock; row < startRowOfBlock + 3; row++) {
       for (
         let column = startColumnOfBlock;
@@ -75,33 +74,15 @@ export class DuplicatesService {
         column++
       ) {
         if (
-          cells[row][column].large === plarge &&
-          cells[row][column].row !== pRow &&
-          cells[row][column].column !== pColumn
+          cells[row][column].large === pDigit &&
+          cells[row][column].row !== pRowIndex &&
+          cells[row][column].column !== pColumnIndex
         ) {
           return true;
         }
       }
     }
     return false;
-  };
-
-  getStart = (start: number): number => {
-    switch (start) {
-      case 0:
-      case 1:
-      case 2:
-        return 0;
-      case 3:
-      case 4:
-      case 5:
-        return 3;
-      case 6:
-      case 7:
-      case 8:
-        return 6;
-    }
-    return 0;
   };
 
   constructor(private utilitiesService: UtilitiesService) {}

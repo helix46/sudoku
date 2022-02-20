@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { columnType, rowType, StructCell } from './app.component';
+import {
+  columnType,
+  dimension,
+  indexType,
+  candidateType,
+  rowType,
+  StructCell,
+} from './definitions';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +17,7 @@ export class UtilitiesService {
     column: columnType
   ): StructCell[] => {
     const ColumnOfCells: StructCell[] = [];
-    this.getRowArray().forEach((row) => {
+    this.getIndexArray().forEach((row) => {
       ColumnOfCells.push(cells[row][column]);
     });
     return ColumnOfCells;
@@ -78,36 +85,64 @@ export class UtilitiesService {
     console.log(JSON.stringify(structCell), comment);
   };
 
-  getColumnArray = (): columnType[] => {
-    const array: columnType[] = new Array<columnType>(9);
-    return array.map((_, index): columnType => {
+  getIndexArray = (): indexType[] => {
+    const array: indexType[] = new Array<indexType>(dimension);
+    return array.map((_, index): indexType => {
       switch (index) {
         case 0:
-          return 1;
+          return 0;
         case 1:
-          return 2;
+          return 1;
         case 2:
-          return 3;
+          return 2;
         case 3:
-          return 4;
+          return 3;
         case 4:
-          return 5;
+          return 4;
         case 5:
-          return 6;
+          return 5;
         case 6:
-          return 7;
+          return 6;
         case 7:
-          return 8;
+          return 7;
         case 8:
-          return 9;
+          return 8;
         default:
           return 1;
       }
     });
   };
 
+  getColumnArray = (): columnType[] => {
+    const array: columnType[] = new Array<columnType>(dimension);
+    return array.map((_, index): columnType => {
+      switch (index) {
+        case 0:
+          return '1';
+        case 1:
+          return '2';
+        case 2:
+          return '3';
+        case 3:
+          return '4';
+        case 4:
+          return '5';
+        case 5:
+          return '6';
+        case 6:
+          return '7';
+        case 7:
+          return '8';
+        case 8:
+          return '9';
+        default:
+          return '1';
+      }
+    });
+  };
+
   getRowArray = () => {
-    const array: rowType[] = new Array<rowType>(9);
+    const array: rowType[] = new Array<rowType>(dimension);
     return array.map((_, index): rowType => {
       switch (index) {
         case 0:
@@ -134,7 +169,10 @@ export class UtilitiesService {
     });
   };
 
-  addNumberstoUniqueArray = (array: number[], numbersToAdd: number[]) => {
+  addNumberstoUniqueArray = (
+    array: candidateType[],
+    numbersToAdd: candidateType[]
+  ) => {
     numbersToAdd.forEach((num) => {
       const filteredArray = array.filter((arrayNum) => {
         return arrayNum === num;
@@ -146,38 +184,56 @@ export class UtilitiesService {
     });
   };
 
-  getUniquePossiblesForBlock = (
+  getUniqueCandidatesForBlock = (
     cells: StructCell[][],
     block: number
-  ): number[] => {
+  ): candidateType[] => {
     const startRow = this.getBlockStartRow(block);
     const startCol = this.getBlockStartColumn(block);
-    const UniquePossiblesForBlock: number[] = [];
+    const UniqueCandidatesForBlock: candidateType[] = [];
     for (let row = startRow; row < startRow + 3; row++) {
-      // get unique possibles for this row of the block
+      // get unique candidates for this row of the block
       for (let column = startCol; column < startCol + 3; column++) {
         const structCell: StructCell = cells[row][column];
         this.addNumberstoUniqueArray(
-          UniquePossiblesForBlock,
-          structCell.possibles
+          UniqueCandidatesForBlock,
+          structCell.candidates
         );
       }
     }
-    return UniquePossiblesForBlock;
+    return UniqueCandidatesForBlock;
   };
 
-  arrayEquals = (pair: number[], possibles: number[]): boolean => {
-    if (pair.length !== possibles.length) {
+  arrayEquals = (pair: number[], candidates: number[]): boolean => {
+    if (pair.length !== candidates.length) {
       return false;
     }
 
     let equals = true;
     pair.forEach((value, index) => {
-      if (value !== possibles[index]) {
+      if (value !== candidates[index]) {
         equals = false;
       }
     });
     return equals;
+  };
+
+  getStartOfBlock = (start: indexType): indexType => {
+    switch (start) {
+      case 0:
+      case 1:
+      case 2:
+        return 0;
+      case 3:
+      case 4:
+      case 5:
+        return 3;
+      case 6:
+      case 7:
+      case 8:
+        return 6;
+    }
+    return 0;
   };
 
   constructor() {}

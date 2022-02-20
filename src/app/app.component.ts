@@ -4,20 +4,7 @@ import { AppService } from './app.service';
 import { ImportGameService } from './import-game.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
 import { UtilitiesService } from './utilities.service';
-
-export interface StructCell {
-  row: rowType;
-  column: columnType;
-  given: boolean;
-  large: possibleType | null;
-  possibles: possibleType[];
-  focussed: boolean;
-  error: boolean;
-}
-
-export type columnType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-export type rowType = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I';
-export type possibleType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+import { StructCell } from './definitions';
 
 @Component({
   selector: 'app-root',
@@ -30,8 +17,8 @@ export class AppComponent {
   cellsEnteredAreGiven = false;
 
   clearFocus = () => {
-    this.utilitiesService.getArray().forEach((row) => {
-      this.utilitiesService.getArray().forEach((column) => {
+    this.utilitiesService.getIndexArray().forEach((row) => {
+      this.utilitiesService.getIndexArray().forEach((column) => {
         this.cells[row][column].focussed = false;
       });
     });

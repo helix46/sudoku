@@ -99,9 +99,9 @@ export class CellComponent implements OnInit {
     }
   };
 
-  displayPossibles = (): string => {
+  displayCandidates = (): string => {
     let s = '';
-    this.structCell.possibles.forEach((n) => {
+    this.structCell.candidates.forEach((n) => {
       s += n.toString();
     });
     return s;
