@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { StructCell } from '../app.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { StructCellModal } from '../cell/cell.component';
+import { digitType } from '../definitions';
 // import { StructCellModal } from '../cell/cell.component';
 
 @Component({
@@ -14,9 +14,9 @@ export class ChoiceComponent implements OnInit {
   //data!: StructCell;
   data!: StructCellModal;
 
-  clicked = (num: number) => {
+  clicked = (num: digitType) => {
     if (this.data.isLarge) {
-      this.data.structCell.large = num;
+      this.data.structCell.digit = num;
       this.data.structCell.candidates = [num];
       this.matDialogRef.close(this.data.structCell);
     } else {

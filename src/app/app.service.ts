@@ -19,7 +19,7 @@ export class AppService {
 
   initialiseRow = (rowIndex: indexType): StructCell[] => {
     const rowOfCells: StructCell[] = [];
-    this.utilitiesService.getColumnArray().forEach((columnIndex) => {
+    this.utilitiesService.getIndexArray().forEach((columnIndex) => {
       const structCell: StructCell = this.initialiseCell(rowIndex, columnIndex);
       rowOfCells.push(structCell);
     });

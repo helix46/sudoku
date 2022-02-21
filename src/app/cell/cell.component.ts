@@ -6,11 +6,12 @@ import {
   Output,
   Type,
 } from '@angular/core';
-import { StructCell } from '../app.component';
+
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { ModalContainerComponent } from '../modal-container/modal-container.component';
 import { ChoiceComponent } from '../choice/choice.component';
 import { AppService } from '../app.service';
+import { StructCell } from '../definitions';
 
 export interface StructCellModal {
   structCell: StructCell;
@@ -40,7 +41,7 @@ export class CellComponent implements OnInit {
     if (
       !this.cellsEnteredAreGiven &&
       !this.structCell.given &&
-      !this.structCell.large
+      !this.structCell.digit
     ) {
       this.focussed.emit();
       this.openChoice(false, this.cells);
@@ -75,7 +76,7 @@ export class CellComponent implements OnInit {
           }
         } else {
           if (isLarge) {
-            this.structCell.large = null;
+            this.structCell.digit = '';
           }
         }
         this.appService.checkForErrors(cells);

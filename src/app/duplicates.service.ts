@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UtilitiesService } from './utilities.service';
-import { digitType, indexType, StructCell } from './definitions';
+import { digitType, indexType, StructBlock, StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
@@ -65,25 +65,22 @@ export class DuplicatesService {
     cells: StructCell[][],
     cellToExclude: StructCell
   ): boolean => {
-    const startRowOfBlock = this.utilitiesService.getStartOfBlock(pRowIndex);
-    const startColumnOfBlock =
-      this.utilitiesService.getStartOfBlock(pColumnIndex);
-    for (let row = startRowOfBlock; row < startRowOfBlock + 3; row++) {
-      for (
-        let column = startColumnOfBlock;
-        column < startColumnOfBlock + 3;
-        column++
+    let digitExists = false;
+    const structBlock: StructBlock = this.utilitiesService.getBlock(
+      blockIndex,
+      cells
+    );
+    structBlock.cells.forEach((cell) => {
+      if (
+        cell.digit === digit &&
+        cell.rowIndex !== cellToExclude.rowIndex &&
+        cell.columnIndex !== cellToExclude.columnIndex
       ) {
-        if (
-          cells[row][column].large === pDigit &&
-          cells[row][column].row !== pRowIndex &&
-          cells[row][column].column !== pColumnIndex
-        ) {
-          return true;
-        }
+        digitExists = true;
       }
-    }
-    return false;
+    });
+
+    return digitExists;
   };
 
   constructor(private utilitiesService: UtilitiesService) {}

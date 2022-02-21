@@ -93,22 +93,19 @@ export class BlockIntersectionsService {
   removeDifferentRowCandidates = (
     cells: StructCell[][],
     block: indexType,
-    UniquecandidatesForBlock: candidateType[],
+    UniqueCandidatesForBlock: candidateType[],
     rowToAnalyse: indexType
   ) => {
     const startRow = this.utilitiesService.getBlockStartRow(block);
     const AllCellsForBlock = this.utilitiesService.getBlockOfCells(
-      cells,
-      block
+      block,
+      cells
     );
 
-    if (block === 7 && rowToAnalyse === 6) {
-      console.log('');
-    }
     //remove possiblitiles
     for (let row = startRow; row < startRow + 3; row++) {
       AllCellsForBlock.forEach((structCell) => {
-        if (structCell.row !== rowToAnalyse && !structCell.large) {
+        if (structCell.rowIndex !== rowToAnalyse && !structCell.digit) {
           this.removeCandidatesFromArray(
             UniqueCandidatesForBlock,
             structCell.candidates
@@ -119,7 +116,7 @@ export class BlockIntersectionsService {
   };
 
   removeCandidatesFromArray = (
-    arrayToRemoveFrom: indexType[],
+    arrayToRemoveFrom: candidateType[],
     numbersToRemove: candidateType[]
   ): boolean => {
     const initialLength = arrayToRemoveFrom.length;

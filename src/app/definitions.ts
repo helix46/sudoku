@@ -25,3 +25,9 @@ export type digitType =
 export type indexType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export const dimension = 9;
+
+export interface StructBlock {
+  startRowIndex: indexType;
+  startColumnIndex: indexType;
+  cells: StructCell[];
+}

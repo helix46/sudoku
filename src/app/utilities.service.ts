@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
-  columnType,
   dimension,
   indexType,
   candidateType,
-  rowType,
   StructCell,
   digitType,
+  StructBlock,
 } from './definitions';
 
 @Injectable({
@@ -15,16 +14,16 @@ import {
 export class UtilitiesService {
   getColumnOfCells = (
     cells: StructCell[][],
-    column: columnType
+    columnIndex: indexType
   ): StructCell[] => {
     const ColumnOfCells: StructCell[] = [];
-    this.getIndexArray().forEach((row) => {
-      ColumnOfCells.push(cells[row][column]);
+    this.getIndexArray().forEach((rowIndex) => {
+      ColumnOfCells.push(cells[rowIndex][columnIndex]);
     });
     return ColumnOfCells;
   };
 
-  getBlockStartRow = (block: number): number => {
+  getBlockStartRow = (block: indexType): indexType => {
     switch (block) {
       case 0:
       case 1:
@@ -44,7 +43,7 @@ export class UtilitiesService {
     throw new Error('Start row not found in block: ' + block);
   };
 
-  getBlockStartColumn = (block: number): number => {
+  getBlockStartColumn = (block: indexType): indexType => {
     switch (block) {
       case 0:
       case 3:
@@ -64,9 +63,12 @@ export class UtilitiesService {
     throw new Error('Start column not found in block: ' + block);
   };
 
-  getBlockOfCells = (cells: StructCell[][], block: number): StructCell[] => {
-    const startRow = this.getBlockStartRow(block);
-    const startCol = this.getBlockStartColumn(block);
+  getBlockOfCells = (
+    blockIndex: indexType,
+    cells: StructCell[][]
+  ): StructCell[] => {
+    const startRow = this.getBlockStartRow(blockIndex);
+    const startCol = this.getBlockStartColumn(blockIndex);
 
     const returnArray: StructCell[] = [];
     returnArray.push(cells[startRow][startCol]);
@@ -114,65 +116,9 @@ export class UtilitiesService {
     });
   };
 
-  getColumnArray = (): columnType[] => {
-    const array: columnType[] = new Array<columnType>(dimension);
-    return array.map((_, index): columnType => {
-      switch (index) {
-        case 0:
-          return '1';
-        case 1:
-          return '2';
-        case 2:
-          return '3';
-        case 3:
-          return '4';
-        case 4:
-          return '5';
-        case 5:
-          return '6';
-        case 6:
-          return '7';
-        case 7:
-          return '8';
-        case 8:
-          return '9';
-        default:
-          return '1';
-      }
-    });
-  };
-
-  getRowArray = () => {
-    const array: rowType[] = new Array<rowType>(dimension);
-    return array.map((_, index): rowType => {
-      switch (index) {
-        case 0:
-          return 'A';
-        case 1:
-          return 'B';
-        case 2:
-          return 'C';
-        case 3:
-          return 'D';
-        case 4:
-          return 'E';
-        case 5:
-          return 'F';
-        case 6:
-          return 'G';
-        case 7:
-          return 'H';
-        case 8:
-          return 'I';
-        default:
-          return 'A';
-      }
-    });
-  };
-
   getDigitArray = (): digitType[] => {
     const array: digitType[] = new Array<digitType>(dimension);
-    return array.map((_, index): columnType => {
+    return array.map((_, index) => {
       switch (index) {
         case 0:
           return '1';
@@ -215,10 +161,10 @@ export class UtilitiesService {
 
   getUniqueCandidatesForBlock = (
     cells: StructCell[][],
-    block: number
+    blockIndex: indexType
   ): candidateType[] => {
-    const startRow = this.getBlockStartRow(block);
-    const startCol = this.getBlockStartColumn(block);
+    const startRow = this.getBlockStartRow(blockIndex);
+    const startCol = this.getBlockStartColumn(blockIndex);
     const UniqueCandidatesForBlock: candidateType[] = [];
     for (let row = startRow; row < startRow + 3; row++) {
       // get unique candidates for this row of the block
@@ -291,6 +237,14 @@ export class UtilitiesService {
       return 7;
     }
     return 8;
+  };
+
+  getBlock = (blockIndex: indexType, cells: StructCell[][]): StructBlock => {
+    return {
+      startRowIndex: this.getBlockStartRow(blockIndex),
+      startColumnIndex: this.getBlockStartColumn(blockIndex),
+      cells: this.getBlockOfCells(blockIndex, cells),
+    };
   };
 
   constructor() {}
