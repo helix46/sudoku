@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { StructCell } from './app.component';
 import { UtilitiesService } from './utilities.service';
+import { digitType, StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +22,7 @@ export class PairsOfPairsService {
 
   findPairsOfPairsInEachRow = (cells: StructCell[][]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getArray().forEach((row) => {
+    this.utilitiesService.getIndexArray().forEach((row) => {
       if (row === 5) {
         console.log('');
       }
@@ -35,7 +35,7 @@ export class PairsOfPairsService {
 
   findPairsOfPairsInEachColumn = (cells: StructCell[][]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getArray().forEach((column) => {
+    this.utilitiesService.getIndexArray().forEach((column) => {
       const arrayOfCells = this.utilitiesService.getColumnOfCells(
         cells,
         column
@@ -47,8 +47,8 @@ export class PairsOfPairsService {
 
   findPairsOfPairsInEachBlock = (cells: StructCell[][]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getArray().forEach((block) => {
-      const arrayOfCells = this.utilitiesService.getBlockOfCells(cells, block);
+    this.utilitiesService.getIndexArray().forEach((block) => {
+      const arrayOfCells = this.utilitiesService.getBlockOfCells(block, cells);
       if (this.findPairsOfPairsInNineCells(arrayOfCells)) {
         changeMade = true;
       }
@@ -58,12 +58,12 @@ export class PairsOfPairsService {
 
   findPairsOfPairsInNineCells = (cells: StructCell[]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getArray().forEach((i) => {
+    this.utilitiesService.getIndexArray().forEach((i) => {
       // if a cell contains 2 candidates
-      if (cells[i].large === null && cells[i].candidates.length === 2) {
+      if (cells[i].digit === '' && cells[i].candidates.length === 2) {
         const pair = cells[i].candidates;
         // look at the other cells for the same pair
-        this.utilitiesService.getArray().forEach((j) => {
+        this.utilitiesService.getIndexArray().forEach((j) => {
           // if there are 2 pairs of pairs
           if (
             this.utilitiesService.arrayEquals(pair, cells[j].candidates) &&
@@ -81,28 +81,28 @@ export class PairsOfPairsService {
 
   RemoveSharedPairFromNineCells = (
     cells: StructCell[],
-    pair: number[],
+    pair: digitType[],
     i: number,
     j: number
   ) => {
-    this.utilitiesService.getArray().forEach((k) => {
+    this.utilitiesService.getIndexArray().forEach((k) => {
       if (k !== i && k !== j) {
         this.RemoveSharedPairFromACell(cells[k], pair);
       }
     });
   };
 
-  RemoveSharedPairFromACell = (structCell: StructCell, pair: number[]) => {
-    if (structCell.row === 4 && structCell.column === 6) {
+  RemoveSharedPairFromACell = (structCell: StructCell, pair: digitType[]) => {
+    if (structCell.rowIndex === 4 && structCell.columnIndex === 6) {
       console.log('');
     }
-    const filteredArray = structCell.candidates.filter((num: number) => {
+    const filteredArray = structCell.candidates.filter((num: digitType) => {
       if (num === pair[0]) {
         return false;
       }
       return num !== pair[1];
     });
-    if (!structCell.large) {
+    if (!structCell.digit) {
       if (filteredArray.length === 0) {
         console.log('');
       }

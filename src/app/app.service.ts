@@ -3,7 +3,7 @@ import { DuplicatesService } from './duplicates.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
 import { FindSingleCandidateService } from './find-single-candidate.service';
 import { UtilitiesService } from './utilities.service';
-import { BlockIntersectionsService } from './block-intersections.service';
+// import { BlockIntersectionsService } from './block-intersections.service';
 import { indexType, StructCell } from './definitions';
 
 @Injectable({
@@ -11,8 +11,8 @@ import { indexType, StructCell } from './definitions';
 })
 export class AppService {
   initialiseCells = (cells: StructCell[][]) => {
-    this.utilitiesService.getRowArray().forEach((rowID) => {
-      const columns: StructCell[] = this.initialiseRow(rowID);
+    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
+      const columns: StructCell[] = this.initialiseRow(rowIndex);
       cells.push(columns);
     });
   };
@@ -45,8 +45,10 @@ export class AppService {
     this.utilitiesService.getIndexArray().forEach((rowIndex) => {
       this.utilitiesService.getIndexArray().forEach((columnIndex) => {
         cells[rowIndex][columnIndex].error =
-          this.duplicatesService.checkForDuplicate(
-            cells[rowIndex][columnIndex],
+          this.duplicatesService.digitExistInCellsRowColumnOrBlock(
+            cells[rowIndex][columnIndex].digit,
+            rowIndex,
+            columnIndex,
             cells
           );
       });
@@ -56,8 +58,8 @@ export class AppService {
   processCells = (cells: StructCell[][]) => {
     this.findCandidates(cells);
     let changeMadeFindPairsOfPairs = true;
-    let changeMadeFindSingleCandidate = true;
-    let changeMadeFindBlockIntersections = true;
+    //   let changeMadeFindSingleCandidate = true;
+    //    let changeMadeFindBlockIntersections = true;
     while (
       changeMadeFindPairsOfPairs //||
       // changeMadeFindSingleCandidate
@@ -79,16 +81,21 @@ export class AppService {
         const tempCell = cells[rowIndex][columnIndex];
         if (!tempCell.digit) {
           tempCell.candidates = [];
-          //check if any cell in the same row, column or block has this number
-          const duplicate = this.duplicatesService.checkForDuplicate(
-            tempCell,
-            cells
-          );
-          // if the number won't cause a duplicate, include it in the candidates
-          if (!duplicate) {
-            cells[row][column].candidates.push(num);
-            cells[row][column].candidates.sort();
-          }
+          this.utilitiesService.getDigitArray().forEach((digit) => {
+            //check if any cell in the same row, column or block has this number
+            const digitExists =
+              this.duplicatesService.digitExistInCellsRowColumnOrBlock(
+                digit,
+                rowIndex,
+                columnIndex,
+                cells
+              );
+            // if the number won't cause a duplicate, include it in the candidates
+            if (!digitExists) {
+              cells[rowIndex][columnIndex].candidates.push(digit);
+              cells[rowIndex][columnIndex].candidates.sort();
+            }
+          });
         }
       });
     });
@@ -98,7 +105,6 @@ export class AppService {
     private duplicatesService: DuplicatesService,
     private pairsOfPairsService: PairsOfPairsService,
     private findSingleCandidateService: FindSingleCandidateService,
-    private utilitiesService: UtilitiesService,
-    private blockIntersectionsService: BlockIntersectionsService
+    private utilitiesService: UtilitiesService // private blockIntersectionsService: BlockIntersectionsService
   ) {}
 }

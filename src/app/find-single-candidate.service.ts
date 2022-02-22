@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { StructCell } from './app.component';
 import { UtilitiesService } from './utilities.service';
+import { StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +23,7 @@ export class FindSingleCandidateService {
 
   findSingleCandidateInRow = (cells: StructCell[][]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getArray().forEach((row) => {
+    this.utilitiesService.getIndexArray().forEach((row) => {
       if (this.setSingleCandidateInNineCells(cells[row])) {
         changeMade = true;
       }
@@ -33,7 +33,7 @@ export class FindSingleCandidateService {
 
   findSingleCandidateInColumn = (cells: StructCell[][]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getArray().forEach((column) => {
+    this.utilitiesService.getIndexArray().forEach((column) => {
       const arrayOfCells = this.utilitiesService.getColumnOfCells(
         cells,
         column
@@ -47,8 +47,8 @@ export class FindSingleCandidateService {
 
   findSingleCandidateInBlock = (cells: StructCell[][]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getArray().forEach((block) => {
-      const arrayOfCells = this.utilitiesService.getBlockOfCells(cells, block);
+    this.utilitiesService.getIndexArray().forEach((block) => {
+      const arrayOfCells = this.utilitiesService.getBlockOfCells(block, cells);
       if (this.setSingleCandidateInNineCells(arrayOfCells)) {
         changeMade = true;
       }
@@ -59,12 +59,12 @@ export class FindSingleCandidateService {
   setSingleCandidateInNineCells = (cells: StructCell[]): boolean => {
     let changeMade = false;
     // go through numbers 1 - 9
-    this.utilitiesService.getArray(1).forEach((num) => {
+    this.utilitiesService.getDigitArray().forEach((num) => {
       let found = false;
       let duplicateFound = false;
       let indexFoundin = 0;
-      this.utilitiesService.getArray().forEach((index) => {
-        if (!cells[index].large) {
+      this.utilitiesService.getIndexArray().forEach((index) => {
+        if (!cells[index].digit) {
           cells[index].candidates.forEach((candidate) => {
             if (candidate === num) {
               if (found) {
@@ -79,7 +79,7 @@ export class FindSingleCandidateService {
       });
       // if number only found in the candidates of one cell, then set the candidates to this number
       if (found && !duplicateFound) {
-        if (!cells[indexFoundin].large) {
+        if (!cells[indexFoundin].digit) {
           if (
             !this.utilitiesService.arrayEquals(cells[indexFoundin].candidates, [
               num,
@@ -87,7 +87,7 @@ export class FindSingleCandidateService {
           ) {
             changeMade = true;
           }
-          cells[indexFoundin].possibles = [num];
+          cells[indexFoundin].candidates = [num];
         }
       }
     });

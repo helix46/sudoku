@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UtilitiesService } from './utilities.service';
-import { indexType, candidateType, StructCell } from './definitions';
+import { digitType, indexType, StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +31,7 @@ export class BlockIntersectionsService {
       console.log('');
     }
 
-    let UniqueCandidatesForBlock: candidateType[] =
+    let UniqueCandidatesForBlock: digitType[] =
       this.utilitiesService.getUniqueCandidatesForBlock(cells, block);
 
     const startRow = this.utilitiesService.getBlockStartRow(block);
@@ -73,7 +73,7 @@ export class BlockIntersectionsService {
   analyseBlockRowIntersections = (
     cells: StructCell[][],
     block: indexType,
-    UniqueCandidatesForBlock: candidateType[],
+    UniqueCandidatesForBlock: digitType[],
     rowToAnalyse: indexType
   ) => {
     // remove candidates that are in a different row of this block
@@ -83,17 +83,12 @@ export class BlockIntersectionsService {
       UniqueCandidatesForBlock,
       rowToAnalyse
     );
-
-    console.log(
-      'block: ' + block + ' UniqueCandidatesForBlock: ',
-      UniqueCandidatesForBlock
-    );
   };
 
   removeDifferentRowCandidates = (
     cells: StructCell[][],
     block: indexType,
-    UniqueCandidatesForBlock: candidateType[],
+    UniqueCandidatesForBlock: digitType[],
     rowToAnalyse: indexType
   ) => {
     const startRow = this.utilitiesService.getBlockStartRow(block);
@@ -116,8 +111,8 @@ export class BlockIntersectionsService {
   };
 
   removeCandidatesFromArray = (
-    arrayToRemoveFrom: candidateType[],
-    numbersToRemove: candidateType[]
+    arrayToRemoveFrom: digitType[],
+    numbersToRemove: digitType[]
   ): boolean => {
     const initialLength = arrayToRemoveFrom.length;
     numbersToRemove.forEach((numToRemove) => {

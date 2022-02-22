@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { StructCell } from './app.component';
 import { AppService } from './app.service';
+import { digitType, StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +39,7 @@ export class ImportGameService {
     this.appService.initialiseCells(cells);
 
     game.forEach((index) => {
-      cells[index[1]][index[2]].large = index[0];
+      cells[index[1]][index[2]].digit = index[0].toString() as digitType;
       cells[index[1]][index[2]].given = true;
     });
     this.appService.processCells(cells);
@@ -78,7 +78,7 @@ export class ImportGameService {
     ];
     this.appService.initialiseCells(cells);
     game.forEach((index) => {
-      cells[index[1]][index[2]].large = index[0];
+      cells[index[1]][index[2]].digit = index[0].toString() as digitType;
       cells[index[1]][index[2]].given = true;
     });
     this.appService.processCells(cells);
@@ -121,7 +121,7 @@ export class ImportGameService {
     this.appService.initialiseCells(cells);
 
     game.forEach((index) => {
-      cells[index[1]][index[2]].large = index[0];
+      cells[index[1]][index[2]].digit = index[0].toString() as digitType;
       cells[index[1]][index[2]].given = true;
     });
     this.appService.processCells(cells);

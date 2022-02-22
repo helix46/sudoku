@@ -1,87 +1,59 @@
 import { Injectable } from '@angular/core';
 import { UtilitiesService } from './utilities.service';
-import { digitType, indexType, StructBlock, StructCell } from './definitions';
+import { digitType, indexType, StructCell } from './definitions';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DuplicatesService {
-  digitExistsInRow = (
+  digitExistInCellsRowColumnOrBlock = (
     digit: digitType,
     rowIndex: indexType,
-    cells: StructCell[][],
-    cellToExclude: StructCell
-  ): boolean => {
-    let duplicateFound = false;
-    this.utilitiesService.getIndexArray().forEach((columnIndex) => {
-      const temp = cells[rowIndex][columnIndex];
-      if (
-        temp.digit === digit &&
-        temp.columnIndex !== cellToExclude.columnIndex
-      ) {
-        duplicateFound = true;
-      }
-    });
-    return duplicateFound;
-  };
-
-  digitExistsInColumn = (
-    digit: digitType,
     columnIndex: indexType,
-    cells: StructCell[][],
-    cellToExclude: StructCell
+    cells: StructCell[][]
   ): boolean => {
-    let found = false;
-    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
-      const temp = cells[rowIndex][columnIndex];
-      if (temp.digit === digit && temp.rowIndex !== cellToExclude.rowIndex) {
-        found = true;
-      }
-    });
-    return found;
-  };
-
-  checkForDuplicate = (cell: StructCell, cells: StructCell[][]): boolean => {
-    if (cell.digit === '') {
+    if (digit === '') {
       return false;
     }
 
-    if (this.digitExistsInRow(cell.digit, cell.rowIndex, cells, cell)) {
+    let house: StructCell[];
+
+    house = this.utilitiesService.getRowOfCells(cells, rowIndex);
+    if (this.digitExistsInHouse(digit, house, rowIndex, columnIndex)) {
       return true;
     }
 
-    if (this.digitExistsInColumn(cell.digit, cell.columnIndex, cells, cell)) {
+    house = this.utilitiesService.getColumnOfCells(cells, columnIndex);
+    if (this.digitExistsInHouse(digit, house, rowIndex, columnIndex)) {
       return true;
     }
 
-    const blockIndex: indexType =
-      this.utilitiesService.getBlockIndexFromCell(cell);
-    return this.digitExistsInBlock(cell.digit, blockIndex, cells, cell);
+    const blockIndex: indexType = this.utilitiesService.getBlockIndexFromCell(
+      rowIndex,
+      columnIndex
+    );
+    house = this.utilitiesService.getBlockOfCells(blockIndex, cells);
+    return this.digitExistsInHouse(digit, house, rowIndex, columnIndex);
   };
 
-  digitExistsInBlock = (
+  digitExistsInHouse = (
     digit: digitType,
-    blockIndex: indexType,
-    cells: StructCell[][],
-    cellToExclude: StructCell
+    house: StructCell[],
+    rowToExclude: indexType,
+    columnToExclude: indexType
   ): boolean => {
-    let digitExists = false;
-    const structBlock: StructBlock = this.utilitiesService.getBlock(
-      blockIndex,
-      cells
-    );
-    structBlock.cells.forEach((cell) => {
+    let digitFound = false;
+    this.utilitiesService.getIndexArray().forEach((index) => {
+      const temp = house[index];
       if (
-        cell.digit === digit &&
-        cell.rowIndex !== cellToExclude.rowIndex &&
-        cell.columnIndex !== cellToExclude.columnIndex
+        temp.digit === digit &&
+        temp.columnIndex !== columnToExclude &&
+        temp.rowIndex !== rowToExclude
       ) {
-        digitExists = true;
+        digitFound = true;
       }
     });
-
-    return digitExists;
+    return digitFound;
   };
-
   constructor(private utilitiesService: UtilitiesService) {}
 }

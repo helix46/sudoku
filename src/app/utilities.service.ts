@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   dimension,
   indexType,
-  candidateType,
   StructCell,
   digitType,
   StructBlock,
@@ -21,6 +20,17 @@ export class UtilitiesService {
       ColumnOfCells.push(cells[rowIndex][columnIndex]);
     });
     return ColumnOfCells;
+  };
+
+  getRowOfCells = (
+    cells: StructCell[][],
+    rowIndex: indexType
+  ): StructCell[] => {
+    const rowOfCells: StructCell[] = [];
+    this.getIndexArray().forEach((columnIndex) => {
+      rowOfCells.push(cells[rowIndex][columnIndex]);
+    });
+    return rowOfCells;
   };
 
   getBlockStartRow = (block: indexType): indexType => {
@@ -144,10 +154,7 @@ export class UtilitiesService {
     });
   };
 
-  addNumberstoUniqueArray = (
-    array: candidateType[],
-    numbersToAdd: candidateType[]
-  ) => {
+  addNumberstoUniqueArray = (array: digitType[], numbersToAdd: digitType[]) => {
     numbersToAdd.forEach((num) => {
       const filteredArray = array.filter((arrayNum) => {
         return arrayNum === num;
@@ -162,10 +169,10 @@ export class UtilitiesService {
   getUniqueCandidatesForBlock = (
     cells: StructCell[][],
     blockIndex: indexType
-  ): candidateType[] => {
+  ): digitType[] => {
     const startRow = this.getBlockStartRow(blockIndex);
     const startCol = this.getBlockStartColumn(blockIndex);
-    const UniqueCandidatesForBlock: candidateType[] = [];
+    const UniqueCandidatesForBlock: digitType[] = [];
     for (let row = startRow; row < startRow + 3; row++) {
       // get unique candidates for this row of the block
       for (let column = startCol; column < startCol + 3; column++) {
@@ -179,7 +186,7 @@ export class UtilitiesService {
     return UniqueCandidatesForBlock;
   };
 
-  arrayEquals = (pair: number[], candidates: number[]): boolean => {
+  arrayEquals = <T>(pair: T[], candidates: T[]): boolean => {
     if (pair.length !== candidates.length) {
       return false;
     }
@@ -211,29 +218,32 @@ export class UtilitiesService {
     return 0;
   };
 
-  getBlockIndexFromCell = (cell: StructCell): indexType => {
-    if (cell.rowIndex < 3) {
-      if (cell.columnIndex < 3) {
+  getBlockIndexFromCell = (
+    rowIndex: indexType,
+    columnIndex: indexType
+  ): indexType => {
+    if (rowIndex < 3) {
+      if (columnIndex < 3) {
         return 0;
       }
-      if (cell.columnIndex < 6) {
+      if (columnIndex < 6) {
         return 1;
       }
       return 2;
     }
-    if (cell.rowIndex < 6) {
-      if (cell.columnIndex < 3) {
+    if (rowIndex < 6) {
+      if (columnIndex < 3) {
         return 3;
       }
-      if (cell.columnIndex < 6) {
+      if (columnIndex < 6) {
         return 4;
       }
       return 5;
     }
-    if (cell.columnIndex < 3) {
+    if (columnIndex < 3) {
       return 6;
     }
-    if (cell.columnIndex < 6) {
+    if (columnIndex < 6) {
       return 7;
     }
     return 8;

@@ -103,7 +103,7 @@ export class CellComponent implements OnInit {
   displayCandidates = (): string => {
     let s = '';
     this.structCell.candidates.forEach((n) => {
-      s += n.toString();
+      s += n;
     });
     return s;
   };
