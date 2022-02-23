@@ -22,11 +22,9 @@ export class PairsOfPairsService {
 
   findPairsOfPairsInEachRow = (cells: StructCell[][]): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((row) => {
-      if (row === 5) {
-        console.log('');
-      }
-      if (this.findPairsOfPairsInNineCells(cells[row])) {
+    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
+      const house = this.utilitiesService.getRowOfCells(cells, rowIndex);
+      if (this.findPairsOfPairsInHouse(house)) {
         changeMade = true;
       }
     });
@@ -36,11 +34,8 @@ export class PairsOfPairsService {
   findPairsOfPairsInEachColumn = (cells: StructCell[][]): boolean => {
     let changeMade = false;
     this.utilitiesService.getIndexArray().forEach((column) => {
-      const arrayOfCells = this.utilitiesService.getColumnOfCells(
-        cells,
-        column
-      );
-      changeMade = this.findPairsOfPairsInNineCells(arrayOfCells);
+      const house = this.utilitiesService.getColumnOfCells(cells, column);
+      changeMade = this.findPairsOfPairsInHouse(house);
     });
     return changeMade;
   };
@@ -48,29 +43,29 @@ export class PairsOfPairsService {
   findPairsOfPairsInEachBlock = (cells: StructCell[][]): boolean => {
     let changeMade = false;
     this.utilitiesService.getIndexArray().forEach((block) => {
-      const arrayOfCells = this.utilitiesService.getBlockOfCells(block, cells);
-      if (this.findPairsOfPairsInNineCells(arrayOfCells)) {
+      const house = this.utilitiesService.getBlockOfCells(block, cells);
+      if (this.findPairsOfPairsInHouse(house)) {
         changeMade = true;
       }
     });
     return changeMade;
   };
 
-  findPairsOfPairsInNineCells = (cells: StructCell[]): boolean => {
+  findPairsOfPairsInHouse = (house: StructCell[]): boolean => {
     let changeMade = false;
     this.utilitiesService.getIndexArray().forEach((i) => {
       // if a cell contains 2 candidates
-      if (cells[i].digit === '' && cells[i].candidates.length === 2) {
-        const pair = cells[i].candidates;
+      if (house[i].digit === '' && house[i].candidates.length === 2) {
+        const pair = house[i].candidates;
         // look at the other cells for the same pair
         this.utilitiesService.getIndexArray().forEach((j) => {
           // if there are 2 pairs of pairs
           if (
-            this.utilitiesService.arrayEquals(pair, cells[j].candidates) &&
+            this.utilitiesService.arrayEquals(pair, house[j].candidates) &&
             i !== j
           ) {
             // remove the numbers in the shared pair from other candidates
-            this.RemoveSharedPairFromNineCells(cells, pair, i, j);
+            this.RemoveSharedPairFromNineCells(house, pair, i, j);
             changeMade = true;
           }
         });

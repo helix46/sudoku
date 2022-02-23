@@ -47,8 +47,9 @@ export class DuplicatesService {
       const temp = house[index];
       if (
         temp.digit === digit &&
-        temp.columnIndex !== columnToExclude &&
-        temp.rowIndex !== rowToExclude
+        !(
+          temp.columnIndex === columnToExclude && temp.rowIndex === rowToExclude
+        )
       ) {
         digitFound = true;
       }

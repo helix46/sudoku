@@ -99,59 +99,44 @@ export class UtilitiesService {
   };
 
   getIndexArray = (): indexType[] => {
-    const array: indexType[] = new Array<indexType>(dimension);
-    return array.map((_, index): indexType => {
-      switch (index) {
-        case 0:
-          return 0;
-        case 1:
-          return 1;
-        case 2:
-          return 2;
-        case 3:
-          return 3;
-        case 4:
-          return 4;
-        case 5:
-          return 5;
-        case 6:
-          return 6;
-        case 7:
-          return 7;
-        case 8:
-          return 8;
-        default:
-          return 1;
-      }
-    });
+    const array: indexType[] = [];
+    for (let i = 0; i < dimension; i++) {
+      array.push(i as indexType);
+    }
+    return array;
   };
 
   getDigitArray = (): digitType[] => {
-    const array: digitType[] = new Array<digitType>(dimension);
-    return array.map((_, index) => {
-      switch (index) {
-        case 0:
-          return '1';
-        case 1:
-          return '2';
-        case 2:
-          return '3';
-        case 3:
-          return '4';
-        case 4:
-          return '5';
-        case 5:
-          return '6';
-        case 6:
-          return '7';
-        case 7:
-          return '8';
-        case 8:
-          return '9';
-        default:
-          return '1';
-      }
-    });
+    const array: digitType[] = [];
+    for (let i = 1; i <= dimension; i++) {
+      array.push(i.toString() as digitType);
+    }
+    return array;
+    // const array: digitType[] = new Array<digitType>(dimension);
+    // return array.map((_, index) => {
+    //   switch (index) {
+    //     case 0:
+    //       return '1';
+    //     case 1:
+    //       return '2';
+    //     case 2:
+    //       return '3';
+    //     case 3:
+    //       return '4';
+    //     case 4:
+    //       return '5';
+    //     case 5:
+    //       return '6';
+    //     case 6:
+    //       return '7';
+    //     case 7:
+    //       return '8';
+    //     case 8:
+    //       return '9';
+    //     default:
+    //       return '1';
+    //   }
+    // });
   };
 
   addNumberstoUniqueArray = (array: digitType[], numbersToAdd: digitType[]) => {
