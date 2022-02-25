@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { AppService } from './app.service';
-import { digitType, StructCell } from './definitions';
+import { digitType } from './definitions';
+import { allCells } from './utilities.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ImportGameService {
-  importHardGame = (cells: StructCell[][]) => {
+  importHardGame = () => {
     const game: number[][] = [
       [1, 0, 2],
       [2, 0, 3],
@@ -36,16 +37,10 @@ export class ImportGameService {
       [6, 8, 3],
       [2, 8, 8],
     ];
-    this.appService.initialiseCells(cells);
-
-    game.forEach((index) => {
-      cells[index[1]][index[2]].digit = index[0].toString() as digitType;
-      cells[index[1]][index[2]].given = true;
-    });
-    this.appService.processCells(cells);
+    this.importGame(game);
   };
 
-  importEasyGame = (cells: StructCell[][]) => {
+  importEasyGame = () => {
     const game: number[][] = [
       [2, 0, 0],
       [4, 0, 1],
@@ -76,15 +71,10 @@ export class ImportGameService {
       [9, 8, 7],
       [3, 8, 8],
     ];
-    this.appService.initialiseCells(cells);
-    game.forEach((index) => {
-      cells[index[1]][index[2]].digit = index[0].toString() as digitType;
-      cells[index[1]][index[2]].given = true;
-    });
-    this.appService.processCells(cells);
+    this.importGame(game);
   };
 
-  importAnotherHardGame = (cells: StructCell[][]) => {
+  importAnotherHardGame = () => {
     const game: number[][] = [
       [7, 0, 1],
       [5, 0, 3],
@@ -118,13 +108,16 @@ export class ImportGameService {
       [8, 8, 5],
       [4, 8, 7],
     ];
-    this.appService.initialiseCells(cells);
+    this.importGame(game);
+  };
 
+  importGame = (game: number[][]) => {
+    this.appService.initialiseCells();
     game.forEach((index) => {
-      cells[index[1]][index[2]].digit = index[0].toString() as digitType;
-      cells[index[1]][index[2]].given = true;
+      allCells[index[1]][index[2]].digit = index[0].toString() as digitType;
+      allCells[index[1]][index[2]].given = true;
     });
-    this.appService.processCells(cells);
+    this.appService.processCells(true);
   };
 
   constructor(private appService: AppService) {}

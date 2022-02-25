@@ -1,29 +1,36 @@
 import { Injectable } from '@angular/core';
-import { UtilitiesService } from './utilities.service';
-import { digitType, StructCell } from './definitions';
+import { digitType } from './definitions';
+import { Cell } from './cell/cell';
+import {
+  arrayEquals,
+  getColumnOfCells,
+  getIndexArray,
+  getRowOfCells,
+} from './utilities.service';
+import { Block } from './block';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PairsOfPairsService {
-  findPairsOfPairs = (cells: StructCell[][]): boolean => {
+  findPairsOfPairs = (): boolean => {
     let changeMade = false;
-    if (this.findPairsOfPairsInEachRow(cells)) {
+    if (this.findPairsOfPairsInEachRow()) {
       changeMade = true;
     }
-    if (this.findPairsOfPairsInEachColumn(cells)) {
+    if (this.findPairsOfPairsInEachColumn()) {
       changeMade = true;
     }
-    if (this.findPairsOfPairsInEachBlock(cells)) {
+    if (this.findPairsOfPairsInEachBlock()) {
       changeMade = true;
     }
     return changeMade;
   };
 
-  findPairsOfPairsInEachRow = (cells: StructCell[][]): boolean => {
+  findPairsOfPairsInEachRow = (): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
-      const house = this.utilitiesService.getRowOfCells(cells, rowIndex);
+    getIndexArray().forEach((rowIndex) => {
+      const house = getRowOfCells(rowIndex);
       if (this.findPairsOfPairsInHouse(house)) {
         changeMade = true;
       }
@@ -31,19 +38,10 @@ export class PairsOfPairsService {
     return changeMade;
   };
 
-  findPairsOfPairsInEachColumn = (cells: StructCell[][]): boolean => {
+  findPairsOfPairsInEachColumn = (): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((column) => {
-      const house = this.utilitiesService.getColumnOfCells(cells, column);
-      changeMade = this.findPairsOfPairsInHouse(house);
-    });
-    return changeMade;
-  };
-
-  findPairsOfPairsInEachBlock = (cells: StructCell[][]): boolean => {
-    let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((block) => {
-      const house = this.utilitiesService.getBlockOfCells(block, cells);
+    getIndexArray().forEach((column) => {
+      const house = getColumnOfCells(column);
       if (this.findPairsOfPairsInHouse(house)) {
         changeMade = true;
       }
@@ -51,22 +49,31 @@ export class PairsOfPairsService {
     return changeMade;
   };
 
-  findPairsOfPairsInHouse = (house: StructCell[]): boolean => {
+  findPairsOfPairsInEachBlock = (): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((i) => {
+    getIndexArray().forEach((blockIndex) => {
+      const block: Block = new Block(blockIndex);
+      if (this.findPairsOfPairsInHouse(block.cells)) {
+        changeMade = true;
+      }
+    });
+    return changeMade;
+  };
+
+  findPairsOfPairsInHouse = (house: Cell[]): boolean => {
+    let changeMade = false;
+    getIndexArray().forEach((i) => {
       // if a cell contains 2 candidates
       if (house[i].digit === '' && house[i].candidates.length === 2) {
         const pair = house[i].candidates;
         // look at the other cells for the same pair
-        this.utilitiesService.getIndexArray().forEach((j) => {
+        getIndexArray().forEach((j) => {
           // if there are 2 pairs of pairs
-          if (
-            this.utilitiesService.arrayEquals(pair, house[j].candidates) &&
-            i !== j
-          ) {
+          if (arrayEquals(pair, house[j].candidates) && i !== j) {
             // remove the numbers in the shared pair from other candidates
-            this.RemoveSharedPairFromNineCells(house, pair, i, j);
-            changeMade = true;
+            if (this.RemoveSharedPairFromNineCells(house, pair, i, j)) {
+              changeMade = true;
+            }
           }
         });
       }
@@ -75,35 +82,39 @@ export class PairsOfPairsService {
   };
 
   RemoveSharedPairFromNineCells = (
-    cells: StructCell[],
+    cells: Cell[],
     pair: digitType[],
     i: number,
     j: number
-  ) => {
-    this.utilitiesService.getIndexArray().forEach((k) => {
+  ): boolean => {
+    let changeMade = false;
+    getIndexArray().forEach((k) => {
       if (k !== i && k !== j) {
-        this.RemoveSharedPairFromACell(cells[k], pair);
+        if (this.RemoveSharedPairFromACell(cells[k], pair)) {
+          changeMade = true;
+        }
       }
     });
+    return changeMade;
   };
 
-  RemoveSharedPairFromACell = (structCell: StructCell, pair: digitType[]) => {
-    if (structCell.rowIndex === 4 && structCell.columnIndex === 6) {
-      console.log('');
-    }
-    const filteredArray = structCell.candidates.filter((num: digitType) => {
+  RemoveSharedPairFromACell = (cell: Cell, pair: digitType[]): boolean => {
+    let changeMade = false;
+    const filteredArray = cell.candidates.filter((num: digitType) => {
       if (num === pair[0]) {
         return false;
       }
       return num !== pair[1];
     });
-    if (!structCell.digit) {
-      if (filteredArray.length === 0) {
-        console.log('');
+    if (!cell.digit) {
+      if (!arrayEquals(cell.candidates, filteredArray)) {
+        cell.candidates = filteredArray;
+        cell.checkForSingleCandidate();
+        changeMade = true;
       }
-      structCell.candidates = filteredArray;
     }
+    return changeMade;
   };
 
-  constructor(private utilitiesService: UtilitiesService) {}
+  constructor() {}
 }

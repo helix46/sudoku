@@ -2,98 +2,103 @@ import { Injectable } from '@angular/core';
 import { DuplicatesService } from './duplicates.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
 import { FindSingleCandidateService } from './find-single-candidate.service';
-import { UtilitiesService } from './utilities.service';
+import {
+  allCells,
+  addNumberstoUniqueArray,
+  getDigitArray,
+  getIndexArray,
+} from './utilities.service';
 // import { BlockIntersectionsService } from './block-intersections.service';
-import { indexType, StructCell } from './definitions';
+import { indexType } from './definitions';
+import { BlockIntersectionsService } from './block-intersections.service';
+import { NakedSinglesService } from './naked-singles.service';
+import { Cell } from './cell/cell';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppService {
-  initialiseCells = (cells: StructCell[][]) => {
-    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
-      const columns: StructCell[] = this.initialiseRow(rowIndex);
-      cells.push(columns);
+  initialiseCells = () => {
+    allCells.splice(0);
+    getIndexArray().forEach((rowIndex) => {
+      const columns: Cell[] = this.initialiseRow(rowIndex);
+      allCells.push(columns);
     });
   };
 
-  initialiseRow = (rowIndex: indexType): StructCell[] => {
-    const rowOfCells: StructCell[] = [];
-    this.utilitiesService.getIndexArray().forEach((columnIndex) => {
-      const structCell: StructCell = this.initialiseCell(rowIndex, columnIndex);
-      rowOfCells.push(structCell);
+  initialiseRow = (rowIndex: indexType): Cell[] => {
+    const rowOfCells: Cell[] = [];
+    getIndexArray().forEach((columnIndex) => {
+      const cell: Cell = this.initialiseCell(rowIndex, columnIndex);
+      rowOfCells.push(cell);
     });
     return rowOfCells;
   };
 
-  initialiseCell = (
-    rowIndex: indexType,
-    columnIndex: indexType
-  ): StructCell => {
-    return {
-      given: false,
-      columnIndex,
-      rowIndex,
-      digit: '',
-      candidates: [],
-      focussed: false,
-      error: false,
-    };
+  initialiseCell = (rowIndex: indexType, columnIndex: indexType): Cell => {
+    return new Cell(rowIndex, columnIndex);
   };
 
-  checkForErrors = (cells: StructCell[][]) => {
-    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
-      this.utilitiesService.getIndexArray().forEach((columnIndex) => {
-        cells[rowIndex][columnIndex].error =
+  checkForErrors = () => {
+    getIndexArray().forEach((rowIndex) => {
+      getIndexArray().forEach((columnIndex) => {
+        allCells[rowIndex][columnIndex].error =
           this.duplicatesService.digitExistInCellsRowColumnOrBlock(
-            cells[rowIndex][columnIndex].digit,
+            allCells[rowIndex][columnIndex].digit,
             rowIndex,
-            columnIndex,
-            cells
+            columnIndex
           );
       });
     });
   };
 
-  processCells = (cells: StructCell[][]) => {
-    this.findCandidates(cells);
+  processCells = (findCandidates: boolean) => {
     let changeMadeFindPairsOfPairs = true;
-    //   let changeMadeFindSingleCandidate = true;
-    //    let changeMadeFindBlockIntersections = true;
-    while (
-      changeMadeFindPairsOfPairs //||
-      // changeMadeFindSingleCandidate
-      // ||
-      //  changeMadeFindBlockIntersections
-    ) {
-      changeMadeFindPairsOfPairs =
-        this.pairsOfPairsService.findPairsOfPairs(cells);
-      // changeMadeFindSingleCandidate =
-      //  this.findSingleCandidateService.findSingleCandidate(cells);
-      // changeMadeFindBlockIntersections =
-      //   this.blockIntersectionsService.findBlockIntersections(cells);
+    let changeMadeFindSingleCandidate = true;
+    let changeMadeFindBlockIntersections = true;
+    let changeMadeNakedSingles = true;
+    if (findCandidates) {
+      this.findCandidates();
     }
+    while (
+      changeMadeFindPairsOfPairs ||
+      changeMadeFindSingleCandidate ||
+      changeMadeNakedSingles ||
+      changeMadeFindBlockIntersections
+    ) {
+      changeMadeFindPairsOfPairs = this.pairsOfPairsService.findPairsOfPairs();
+      changeMadeFindSingleCandidate =
+        this.findSingleCandidateService.findSingleCandidate();
+      changeMadeNakedSingles = this.nakedSinglesService.checkForNakedSingles();
+      changeMadeFindBlockIntersections =
+        this.blockIntersectionsService.findBlockIntersections();
+    }
+    this.checkForErrors();
   };
 
-  findCandidates = (cells: StructCell[][]) => {
-    this.utilitiesService.getIndexArray().forEach((rowIndex) => {
-      this.utilitiesService.getIndexArray().forEach((columnIndex) => {
-        const tempCell = cells[rowIndex][columnIndex];
-        if (!tempCell.digit) {
-          tempCell.candidates = [];
-          this.utilitiesService.getDigitArray().forEach((digit) => {
+  findCandidates = () => {
+    getIndexArray().forEach((rowIndex) => {
+      getIndexArray().forEach((columnIndex) => {
+        if (!allCells[rowIndex][columnIndex].digit) {
+          allCells[rowIndex][columnIndex].candidates = [];
+          getDigitArray().forEach((digit) => {
             //check if any cell in the same row, column or block has this number
             const digitExists =
               this.duplicatesService.digitExistInCellsRowColumnOrBlock(
                 digit,
                 rowIndex,
-                columnIndex,
-                cells
+                columnIndex
               );
             // if the number won't cause a duplicate, include it in the candidates
             if (!digitExists) {
-              cells[rowIndex][columnIndex].candidates.push(digit);
-              cells[rowIndex][columnIndex].candidates.sort();
+              if (
+                addNumberstoUniqueArray(
+                  allCells[rowIndex][columnIndex].candidates,
+                  [digit]
+                )
+              ) {
+                allCells[rowIndex][columnIndex].candidates.sort();
+              }
             }
           });
         }
@@ -105,6 +110,7 @@ export class AppService {
     private duplicatesService: DuplicatesService,
     private pairsOfPairsService: PairsOfPairsService,
     private findSingleCandidateService: FindSingleCandidateService,
-    private utilitiesService: UtilitiesService // private blockIntersectionsService: BlockIntersectionsService
+    private blockIntersectionsService: BlockIntersectionsService,
+    private nakedSinglesService: NakedSinglesService
   ) {}
 }

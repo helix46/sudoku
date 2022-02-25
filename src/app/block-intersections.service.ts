@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { UtilitiesService } from './utilities.service';
-import { digitType, indexType, StructCell } from './definitions';
+import { getIndexArray } from './utilities.service';
+import { digitType, indexType } from './definitions';
+import { Block } from './block';
 
 @Injectable({
   providedIn: 'root',
@@ -8,10 +9,11 @@ import { digitType, indexType, StructCell } from './definitions';
 export class BlockIntersectionsService {
   // If a number is only candidate in a row/block of a block
   // then it cannot appear elsewhere in the intersecting row/block
-  findBlockIntersections = (cells: StructCell[][]): boolean => {
+  findBlockIntersections = (): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((blockIndex) => {
-      if (this.findIntersectionsForBlock(blockIndex, cells)) {
+
+    getIndexArray().forEach((blockIndex) => {
+      if (this.findIntersectionsForBlock(blockIndex)) {
         changeMade = true;
       }
     });
@@ -21,64 +23,37 @@ export class BlockIntersectionsService {
   // for each row/column of a block, find the candidates for that row/column
   // find candidates that do not exist in other rows/columns of that block
   // for each of these candidates, remove it from the rest of the intersecting row / column
-  findIntersectionsForBlock = (
-    block: indexType,
-    cells: StructCell[][]
-  ): boolean => {
+  findIntersectionsForBlock = (blockIndex: indexType): boolean => {
     let changeMade = false;
 
-    if (block === 7) {
+    if (blockIndex === 7) {
       console.log('');
     }
 
-    let UniqueCandidatesForBlock: digitType[] =
-      this.utilitiesService.getUniqueCandidatesForBlock(cells, block);
+    const block: Block = new Block(blockIndex);
 
-    const startRow = this.utilitiesService.getBlockStartRow(block);
     for (
-      let rowToAnalyse = startRow;
-      rowToAnalyse < startRow + 3;
+      let rowToAnalyse = block.startRowIndex;
+      rowToAnalyse < block.startRowIndex + 3;
       rowToAnalyse++
     ) {
       this.analyseBlockRowIntersections(
-        cells,
-        block,
-        UniqueCandidatesForBlock,
+        blockIndex,
+        block.uniqueCandidatesForBlock,
         rowToAnalyse
       );
     }
-
-    //
-    // // remove these candidates from the rest of the row outside the block
-    // this.utilitiesService.getArray().forEach((column) => {
-    //   // if a cell is outside the block and the large has not been chosen
-    //   if (
-    //     (column < startCol || column >= startCol + 3) &&
-    //     !cells[row][column].large
-    //   ) {
-    //     if (
-    //       this.removeCandidatesFromArray(
-    //         cells[row][column].candidates,
-    //         candidatesForRowOfBlock
-    //       )
-    //     ) {
-    //       changeMade = true;
-    //     }
-    //   }
-    // });
 
     return changeMade;
   };
 
   analyseBlockRowIntersections = (
-    cells: StructCell[][],
     block: indexType,
     UniqueCandidatesForBlock: digitType[],
     rowToAnalyse: indexType
   ) => {
     // remove candidates that are in a different row of this block
     this.removeDifferentRowCandidates(
-      cells,
       block,
       UniqueCandidatesForBlock,
       rowToAnalyse
@@ -86,24 +61,19 @@ export class BlockIntersectionsService {
   };
 
   removeDifferentRowCandidates = (
-    cells: StructCell[][],
-    block: indexType,
+    blockIndex: indexType,
     UniqueCandidatesForBlock: digitType[],
     rowToAnalyse: indexType
   ) => {
-    const startRow = this.utilitiesService.getBlockStartRow(block);
-    const AllCellsForBlock = this.utilitiesService.getBlockOfCells(
-      block,
-      cells
-    );
+    const block: Block = new Block(blockIndex);
 
-    //remove possiblitiles
-    for (let row = startRow; row < startRow + 3; row++) {
-      AllCellsForBlock.forEach((structCell) => {
-        if (structCell.rowIndex !== rowToAnalyse && !structCell.digit) {
+    //remove possibilities
+    for (let row = block.startRowIndex; row < block.startRowIndex + 3; row++) {
+      block.cells.forEach((cell) => {
+        if (cell.rowIndex !== rowToAnalyse && !cell.digit) {
           this.removeCandidatesFromArray(
             UniqueCandidatesForBlock,
-            structCell.candidates
+            cell.candidates
           );
         }
       });
@@ -128,5 +98,5 @@ export class BlockIntersectionsService {
     return initialLength !== arrayToRemoveFrom.length;
   };
 
-  constructor(private utilitiesService: UtilitiesService) {}
+  constructor() {}
 }

@@ -1,98 +1,85 @@
 import { Injectable } from '@angular/core';
-import { UtilitiesService } from './utilities.service';
-import { StructCell } from './definitions';
+import {
+  digitFoundinHouse,
+  getColumnOfCells,
+  getDigitArray,
+  getIndexArray,
+  getRowOfCells,
+} from './utilities.service';
+import { Cell } from './cell/cell';
+import { Block } from './block';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FindSingleCandidateService {
-  findSingleCandidate = (cells: StructCell[][]): boolean => {
+  findSingleCandidate = (): boolean => {
     let changeMade = false;
-    //find number in row / col / block that is only candidate in one cell
-    if (this.findSingleCandidateInRow(cells)) {
+    //find number in row / col / block that is only a candidate in one cell
+    if (this.findSingleCandidateInRow()) {
       changeMade = true;
     }
-    if (this.findSingleCandidateInColumn(cells)) {
+    if (this.findSingleCandidateInColumn()) {
       changeMade = true;
     }
-    if (this.findSingleCandidateInBlock(cells)) {
+    if (this.findSingleCandidateInBlock()) {
       changeMade = true;
     }
     return changeMade;
   };
 
-  findSingleCandidateInRow = (cells: StructCell[][]): boolean => {
+  findSingleCandidateInRow = (): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((row) => {
-      if (this.setSingleCandidateInNineCells(cells[row])) {
+
+    getIndexArray().forEach((rowIndex) => {
+      const house = getRowOfCells(rowIndex);
+      if (this.findAndSetSingleCandidateInHouse(house)) {
         changeMade = true;
       }
     });
     return changeMade;
   };
 
-  findSingleCandidateInColumn = (cells: StructCell[][]): boolean => {
+  findSingleCandidateInColumn = (): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((column) => {
-      const arrayOfCells = this.utilitiesService.getColumnOfCells(
-        cells,
-        column
-      );
-      if (this.setSingleCandidateInNineCells(arrayOfCells)) {
+    getIndexArray().forEach((column) => {
+      const house = getColumnOfCells(column);
+      if (this.findAndSetSingleCandidateInHouse(house)) {
         changeMade = true;
       }
     });
     return changeMade;
   };
 
-  findSingleCandidateInBlock = (cells: StructCell[][]): boolean => {
+  findSingleCandidateInBlock = (): boolean => {
     let changeMade = false;
-    this.utilitiesService.getIndexArray().forEach((block) => {
-      const arrayOfCells = this.utilitiesService.getBlockOfCells(block, cells);
-      if (this.setSingleCandidateInNineCells(arrayOfCells)) {
+    // for each block
+    getIndexArray().forEach((blockIndex) => {
+      const block = new Block(blockIndex);
+      if (this.findAndSetSingleCandidateInHouse(block.cells)) {
         changeMade = true;
       }
     });
     return changeMade;
   };
 
-  setSingleCandidateInNineCells = (cells: StructCell[]): boolean => {
+  findAndSetSingleCandidateInHouse = (house: Cell[]): boolean => {
     let changeMade = false;
-    // go through numbers 1 - 9
-    this.utilitiesService.getDigitArray().forEach((num) => {
-      let found = false;
-      let duplicateFound = false;
-      let indexFoundin = 0;
-      this.utilitiesService.getIndexArray().forEach((index) => {
-        if (!cells[index].digit) {
-          cells[index].candidates.forEach((candidate) => {
-            if (candidate === num) {
-              if (found) {
-                duplicateFound = true;
-              } else {
-                found = true;
-                indexFoundin = index;
-              }
-            }
-          });
-        }
-      });
-      // if number only found in the candidates of one cell, then set the candidates to this number
-      if (found && !duplicateFound) {
-        if (!cells[indexFoundin].digit) {
-          if (
-            !this.utilitiesService.arrayEquals(cells[indexFoundin].candidates, [
-              num,
-            ])
-          ) {
-            changeMade = true;
-          }
-          cells[indexFoundin].candidates = [num];
+    // go through digits 1 - 9
+    getDigitArray().forEach((digit) => {
+      if (!digitFoundinHouse(house, digit)) {
+        const filteredHouse = house.filter((cell) => {
+          return cell.candidatesContainDigit(digit);
+        });
+        if (filteredHouse.length === 1) {
+          filteredHouse[0].candidates = [];
+          filteredHouse[0].digit = digit;
+          changeMade = true;
         }
       }
     });
     return changeMade;
   };
 
-  constructor(private utilitiesService: UtilitiesService) {}
+  constructor() {}
 }

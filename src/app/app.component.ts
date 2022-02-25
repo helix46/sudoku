@@ -3,8 +3,8 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { AppService } from './app.service';
 import { ImportGameService } from './import-game.service';
 import { PairsOfPairsService } from './pairs-of-pairs.service';
-import { UtilitiesService } from './utilities.service';
-import { StructCell } from './definitions';
+import { Cell } from './cell/cell';
+import { allCells, getIndexArray } from './utilities.service';
 
 @Component({
   selector: 'app-root',
@@ -13,13 +13,13 @@ import { StructCell } from './definitions';
 })
 export class AppComponent {
   title = 'sudoku';
-  cells: StructCell[][] = [];
   cellsEnteredAreGiven = false;
+  allCells!: Cell[][];
 
   clearFocus = () => {
-    this.utilitiesService.getIndexArray().forEach((row) => {
-      this.utilitiesService.getIndexArray().forEach((column) => {
-        this.cells[row][column].focussed = false;
+    getIndexArray().forEach((row) => {
+      getIndexArray().forEach((column) => {
+        allCells[row][column].focussed = false;
       });
     });
   };
@@ -31,9 +31,9 @@ export class AppComponent {
   constructor(
     public appService: AppService,
     public importGameService: ImportGameService,
-    public pairsOfPairsService: PairsOfPairsService,
-    private utilitiesService: UtilitiesService
+    public pairsOfPairsService: PairsOfPairsService
   ) {
-    appService.initialiseCells(this.cells);
+    this.allCells = allCells;
+    appService.initialiseCells();
   }
 }

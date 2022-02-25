@@ -1,24 +1,18 @@
 <button
   class="cell"
   [style.backgroundColor]="getBackground()"
-  [style.color]="structCell.error ? 'red' : 'black'"
+  [style.color]="cell.error ? 'red' : 'black'"
   [style.borderBottomColor]="
-    structCell.rowIndex === 2 || structCell.rowIndex === 5
-      ? 'black'
-      : 'lightgrey'
+    cell.rowIndex === 2 || cell.rowIndex === 5 ? 'black' : 'lightgrey'
   "
   [style.borderRightColor]="
-    structCell.columnIndex === 2 || structCell.columnIndex === 5
-      ? 'black'
-      : 'lightgrey'
+    cell.columnIndex === 2 || cell.columnIndex === 5 ? 'black' : 'lightgrey'
   "
   (click)="leftClicked()"
   (contextmenu)="rightClicked()"
 >
-  <span *ngIf="structCell.digit" style="font-size: x-large">
-    {{ structCell.digit }}</span
-  >
-  <span *ngIf="!structCell.digit" style="word-wrap: anywhere">
+  <span *ngIf="cell.digit" style="font-size: x-large"> {{ cell.digit }}</span>
+  <span *ngIf="!cell.digit" style="word-wrap: anywhere">
     {{ displayCandidates() }}</span
   >
 </button>

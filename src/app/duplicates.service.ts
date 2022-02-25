@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
-import { UtilitiesService } from './utilities.service';
-import { digitType, indexType, StructCell } from './definitions';
+import {
+  allCells,
+  getColumnOfCells,
+  getIndexArray,
+  getRowOfCells,
+} from './utilities.service';
+import { digitType, indexType } from './definitions';
+import { Cell } from './cell/cell';
+import { Block } from './block';
 
 @Injectable({
   providedIn: 'root',
@@ -9,41 +16,37 @@ export class DuplicatesService {
   digitExistInCellsRowColumnOrBlock = (
     digit: digitType,
     rowIndex: indexType,
-    columnIndex: indexType,
-    cells: StructCell[][]
+    columnIndex: indexType
   ): boolean => {
     if (digit === '') {
       return false;
     }
 
-    let house: StructCell[];
+    let house: Cell[];
 
-    house = this.utilitiesService.getRowOfCells(cells, rowIndex);
+    house = getRowOfCells(rowIndex);
     if (this.digitExistsInHouse(digit, house, rowIndex, columnIndex)) {
       return true;
     }
 
-    house = this.utilitiesService.getColumnOfCells(cells, columnIndex);
+    house = getColumnOfCells(columnIndex);
     if (this.digitExistsInHouse(digit, house, rowIndex, columnIndex)) {
       return true;
     }
 
-    const blockIndex: indexType = this.utilitiesService.getBlockIndexFromCell(
-      rowIndex,
-      columnIndex
-    );
-    house = this.utilitiesService.getBlockOfCells(blockIndex, cells);
-    return this.digitExistsInHouse(digit, house, rowIndex, columnIndex);
+    const blockIndex: indexType = allCells[rowIndex][columnIndex].blockIndex;
+    const block = new Block(blockIndex);
+    return this.digitExistsInHouse(digit, block.cells, rowIndex, columnIndex);
   };
 
   digitExistsInHouse = (
     digit: digitType,
-    house: StructCell[],
+    house: Cell[],
     rowToExclude: indexType,
     columnToExclude: indexType
   ): boolean => {
     let digitFound = false;
-    this.utilitiesService.getIndexArray().forEach((index) => {
+    getIndexArray().forEach((index) => {
       const temp = house[index];
       if (
         temp.digit === digit &&
@@ -56,5 +59,5 @@ export class DuplicatesService {
     });
     return digitFound;
   };
-  constructor(private utilitiesService: UtilitiesService) {}
+  constructor() {}
 }

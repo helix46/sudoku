@@ -9,34 +9,22 @@
     >
       <app-cell
         [cellsEnteredAreGiven]="cellsEnteredAreGiven"
-        [structCell]="cells[row][column]"
-        [cells]="cells"
+        [cell]="allCells[row][column]"
+        [allCells]="allCells"
         (focussed)="clearFocus()"
       ></app-cell>
     </div>
   </div>
 </div>
 <mat-checkbox (change)="enterGiven($event)">Enter given</mat-checkbox> <br />
-<button
-  mat-raised-button
-  (click)="importGameService.importHardGame(this.cells)"
->
+<button mat-raised-button (click)="importGameService.importHardGame()">
   Import hard game</button
-><button
-  mat-raised-button
-  (click)="importGameService.importAnotherHardGame(this.cells)"
->
+><button mat-raised-button (click)="importGameService.importAnotherHardGame()">
   Import another hard game
 </button>
-<button
-  mat-raised-button
-  (click)="importGameService.importEasyGame(this.cells)"
->
+<button mat-raised-button (click)="importGameService.importEasyGame()">
   Import easy game
 </button>
-<button
-  mat-raised-button
-  (click)="pairsOfPairsService.findPairsOfPairs(this.cells)"
->
+<button mat-raised-button (click)="pairsOfPairsService.findPairsOfPairs()">
   Find pairs of pairs
 </button>
