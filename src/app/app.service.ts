@@ -13,6 +13,7 @@ import { indexType } from './definitions';
 import { BlockIntersectionsService } from './block-intersections.service';
 import { NakedSinglesService } from './naked-singles.service';
 import { Cell } from './cell/cell';
+import { NakedOrHiddenNCandidatesService } from './naked-or-hidden-n-candidates.service';
 
 @Injectable({
   providedIn: 'root',
@@ -73,6 +74,7 @@ export class AppService {
       changeMadeFindBlockIntersections =
         this.blockIntersectionsService.findBlockIntersections();
     }
+    this.nakedOrHiddenNCandidatesService.getNakedOrHiddenNCandidates();
     this.checkForErrors();
   };
 
@@ -111,6 +113,7 @@ export class AppService {
     private pairsOfPairsService: PairsOfPairsService,
     private findSingleCandidateService: FindSingleCandidateService,
     private blockIntersectionsService: BlockIntersectionsService,
-    private nakedSinglesService: NakedSinglesService
+    private nakedSinglesService: NakedSinglesService,
+    private nakedOrHiddenNCandidatesService: NakedOrHiddenNCandidatesService
   ) {}
 }

@@ -4,20 +4,63 @@ import { Cell } from './cell/cell';
 import {
   addNumberstoUniqueArray,
   digitFoundinArray,
+  getColumnOfCells,
+  getIndexArray,
+  getRowOfCells,
 } from './utilities.service';
+import { Block } from './block';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NakedOrHiddenNCandidatesService {
-  getNakedOrHiddenNCandidatesInAHouse = (house: Cell[], N: number) => {
+  getNakedOrHiddenNCandidates = () => {
+    for (let i = 1; i < 5; i++) {
+      this.getNakedOrHiddenNCandidatesForANumberOfCandidates(i);
+    }
+  };
+
+  getNakedOrHiddenNCandidatesForANumberOfCandidates = (
+    NumberOfCandidates: number
+  ) => {
+    let changeMade = false;
+    getIndexArray().forEach((index) => {
+      const rows = getRowOfCells(index);
+      if (this.getNakedOrHiddenNCandidatesInAHouse(rows, NumberOfCandidates)) {
+        changeMade = true;
+      }
+
+      const columns = getColumnOfCells(index);
+      if (
+        this.getNakedOrHiddenNCandidatesInAHouse(columns, NumberOfCandidates)
+      ) {
+        changeMade = true;
+      }
+
+      const block = new Block(index);
+      if (
+        this.getNakedOrHiddenNCandidatesInAHouse(
+          block.cells,
+          NumberOfCandidates
+        )
+      ) {
+        changeMade = true;
+      }
+    });
+  };
+
+  getNakedOrHiddenNCandidatesInAHouse = (
+    house: Cell[],
+    NumberOfCandidates: number
+  ): boolean => {
+    let changeMade = false;
     // get all unique candidates in the house
     const setOfCandidates: digitType[] = this.getSetOfCandidates(house);
 
     // get all combinations from this set of N length
     const combinationsOfCandidates: digitType[][] = this.getCombinations(
       setOfCandidates,
-      N
+      NumberOfCandidates
     );
 
     // test each combination of candidates
@@ -29,25 +72,32 @@ export class NakedOrHiddenNCandidatesService {
       );
       // if the number of cells equals the number of candidates
       // then remove other candidates from these cells
-      if (indices.length === N) {
-        this.removeExcludedCandidates(house, indices, candidates);
+      if (indices.length === NumberOfCandidates) {
+        if (this.removeExcludedCandidates(house, indices, candidates)) {
+          changeMade = true;
+        }
       }
     });
+    return changeMade;
   };
 
   removeExcludedCandidates = (
     house: Cell[],
     indices: number[],
     candidatesToKeep: digitType[]
-  ) => {
+  ): boolean => {
+    let changeMade = false;
     indices.forEach((index) => {
       const tempCandidates = house[index].candidates;
       tempCandidates.forEach((candidate) => {
         if (!digitFoundinArray(candidate, candidatesToKeep)) {
-          house[index].removeCandidate(candidate);
+          if (house[index].removeCandidate(candidate)) {
+            changeMade = true;
+          }
         }
       });
     });
+    return changeMade;
   };
 
   getCellsThatContainCandidates = (
