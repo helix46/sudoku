@@ -37,6 +37,7 @@ export class AppComponent {
         }
         return;
       }
+
       fork(index + 1, combination.concat([array[index]]));
       fork(index + 1, combination);
     }
