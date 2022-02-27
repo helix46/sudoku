@@ -35,9 +35,9 @@ export const getDigitArray = (): digitType[] => {
   return array;
 };
 
-export const addNumberstoUniqueArray = (
-  array: digitType[],
-  numbersToAdd: digitType[]
+export const addNumberstoUniqueArray = <T>(
+  array: T[],
+  numbersToAdd: T[]
 ): boolean => {
   let changeMade = false;
   numbersToAdd.forEach((num) => {
@@ -54,6 +54,7 @@ export const addNumberstoUniqueArray = (
   return changeMade;
 };
 
+// assumes that each array is sorted
 export const arrayEquals = <T>(pair: T[], candidates: T[]): boolean => {
   if (pair.length !== candidates.length) {
     return false;
@@ -72,6 +73,19 @@ export const digitFoundinHouse = (house: Cell[], digit: digitType): boolean => {
   let found = false;
   house.forEach((cell) => {
     if (cell.digit === digit) {
+      found = true;
+    }
+  });
+  return found;
+};
+
+export const digitFoundinArray = (
+  digit: digitType,
+  digits: digitType[]
+): boolean => {
+  let found = false;
+  digits.forEach((d) => {
+    if (d === digit) {
       found = true;
     }
   });

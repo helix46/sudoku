@@ -46,7 +46,7 @@ export class Cell {
     });
   };
 
-  candidatesContainDigit = (digit: digitType): boolean => {
+  public candidatesContainDigit = (digit: digitType): boolean => {
     let found = false;
     this.candidates.forEach((candidate) => {
       if (candidate === digit) {
