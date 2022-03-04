@@ -9,6 +9,8 @@ import {
 import { digitType, indexType } from './definitions';
 import { Block } from './block';
 import { Cell } from './cell/cell';
+import { Intersection } from './intersection';
+import { Row } from './row';
 
 @Injectable({
   providedIn: 'root',
@@ -19,46 +21,20 @@ export class BlockIntersectionsService {
   findBlockIntersections = (): boolean => {
     let changeMade = false;
 
-    // getIndexArray().forEach((blockIndex) => {
-    //   if (this.findIntersectionsForBlock(blockIndex)) {
-    //     changeMade = true;
-    //   }
-    // });
-    // return changeMade;
+    // get all row and block intersections
+    getIndexArray().forEach((rowIndex) => {
+      const row = new Row(rowIndex);
+      row.blocks.forEach((block) => {
+        const intersection = new Intersection(row, true, block);
+        if (this.analyseBlockIntersectionSets(intersection)) {
+          changeMade = true;
+        }
+      });
+    });
+    return changeMade;
   };
 
-  // for each row/column of a block, find the candidates for that row/column
-  // find candidates that do not exist in other rows/columns of that block
-  // for each of these candidates, remove it from the rest of the intersecting row / column
-  // findIntersectionsForBlock = (blockIndex: indexType): boolean => {
-  //   let changeMade = false;
-  //
-  //   if (blockIndex === 7) {
-  //     console.log('');
-  //   }
-  //
-  //   const block: Block = new Block(blockIndex);
-  //
-  //   for (
-  //     let rowToAnalyse = block.startRowIndex;
-  //     rowToAnalyse < block.startRowIndex + 3;
-  //     rowToAnalyse++
-  //   ) {
-  //     this.analyseBlockRowIntersections(
-  //       blockIndex,
-  //       block.uniqueCandidatesForBlock,
-  //       rowToAnalyse
-  //     );
-  //   }
-  //
-  //   return changeMade;
-  // };
-
-  analyseBlockIntersectionSets = (
-    partialHouse1: Cell[],
-    partialHouse2: Cell[],
-    intersection: Cell[]
-  ): boolean => {
+  analyseBlockIntersectionSets = (intersection: Intersection): boolean => {
     // checks intersection of a row or column with a block
     // partialHouse1 and partialHouse2 are arrays of length 6
     // that contain the cells that don't intersect.
@@ -69,7 +45,7 @@ export class BlockIntersectionsService {
     // find pairs or triples of candidates in the intersection
     getDigitArray().forEach((digit) => {
       let count = 0;
-      intersection.forEach((cell) => {
+      intersection.intersectingCells.forEach((cell) => {
         if (digitFoundinArray(digit, cell.candidates)) {
           count += 1;
         }
@@ -80,8 +56,8 @@ export class BlockIntersectionsService {
         // then remove the digit from candidates in the other partial house
 
         // first partial house
-        if (!digitFoundinHouse(partialHouse1, digit)) {
-          partialHouse2.forEach((cell) => {
+        if (!digitFoundinHouse(intersection.partialHouse1, digit)) {
+          intersection.partialHouse2.forEach((cell) => {
             if (removeCandidatesFromArray(cell.candidates, [digit])) {
               changeMade = true;
             }
@@ -89,8 +65,8 @@ export class BlockIntersectionsService {
         }
 
         // second partial house
-        if (!digitFoundinHouse(partialHouse2, digit)) {
-          partialHouse1.forEach((cell) => {
+        if (!digitFoundinHouse(intersection.partialHouse2, digit)) {
+          intersection.partialHouse1.forEach((cell) => {
             if (removeCandidatesFromArray(cell.candidates, [digit])) {
               changeMade = true;
             }
@@ -101,39 +77,6 @@ export class BlockIntersectionsService {
 
     return changeMade;
   };
-
-  // analyseBlockRowIntersections = (
-  //   block: indexType,
-  //   UniqueCandidatesForBlock: digitType[],
-  //   rowToAnalyse: indexType
-  // ) => {
-  //   // remove candidates that are in a different row of this block
-  //   this.removeDifferentRowCandidates(
-  //     block,
-  //     UniqueCandidatesForBlock,
-  //     rowToAnalyse
-  //   );
-  // };
-  //
-  // removeDifferentRowCandidates = (
-  //   blockIndex: indexType,
-  //   UniqueCandidatesForBlock: digitType[],
-  //   rowToAnalyse: indexType
-  // ) => {
-  //   const block: Block = new Block(blockIndex);
-  //
-  //   //remove possibilities
-  //   for (let row = block.startRowIndex; row < block.startRowIndex + 3; row++) {
-  //     block.cells.forEach((cell) => {
-  //       if (cell.rowIndex !== rowToAnalyse && !cell.digit) {
-  //         this.removeCandidatesFromArray(
-  //           UniqueCandidatesForBlock,
-  //           cell.candidates
-  //         );
-  //       }
-  //     });
-  //   }
-  // };
 
   constructor() {}
 }

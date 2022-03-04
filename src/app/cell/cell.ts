@@ -28,6 +28,19 @@ export class Cell {
   public focussed = false;
   public error = false;
 
+  existsIn = (cells: Cell[]): boolean => {
+    let found = false;
+    cells.forEach((cell) => {
+      if (
+        cell.rowIndex === this.rowIndex &&
+        cell.columnIndex === this.columnIndex
+      ) {
+        found = true;
+      }
+    });
+    return found;
+  };
+
   removeSeenCandidates = () => {
     if (this.rowIndex === 4 && this.columnIndex === 8) {
       console.log('');
