@@ -58,23 +58,27 @@ export class AppService {
     let changeMadeFindSingleCandidate = true;
     let changeMadeFindBlockIntersections = true;
     let changeMadeNakedSingles = true;
+    let changeMadeNakedOrHiddenNCandidates = true;
     if (findCandidates) {
       this.findCandidates();
     }
     while (
-      changeMadeFindPairsOfPairs ||
-      changeMadeFindSingleCandidate ||
-      changeMadeNakedSingles ||
-      changeMadeFindBlockIntersections
+      // changeMadeFindPairsOfPairs ||
+      // changeMadeFindSingleCandidate ||
+      // changeMadeNakedSingles ||
+      changeMadeFindBlockIntersections ||
+      changeMadeNakedOrHiddenNCandidates
     ) {
-      changeMadeFindPairsOfPairs = this.pairsOfPairsService.findPairsOfPairs();
-      changeMadeFindSingleCandidate =
-        this.findSingleCandidateService.findSingleCandidate();
-      changeMadeNakedSingles = this.nakedSinglesService.checkForNakedSingles();
+      // changeMadeFindPairsOfPairs = this.pairsOfPairsService.findPairsOfPairs();
+      // changeMadeFindSingleCandidate =
+      //   this.findSingleCandidateService.findSingleCandidate();
+      // changeMadeNakedSingles = this.nakedSinglesService.checkForNakedSingles();
       changeMadeFindBlockIntersections =
         this.blockIntersectionsService.findBlockIntersections();
+      changeMadeNakedOrHiddenNCandidates =
+        this.nakedOrHiddenNCandidatesService.getNakedOrHiddenNCandidates();
     }
-    this.nakedOrHiddenNCandidatesService.getNakedOrHiddenNCandidates();
+
     this.checkForErrors();
   };
 

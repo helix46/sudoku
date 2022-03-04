@@ -91,3 +91,21 @@ export const digitFoundinArray = (
   });
   return found;
 };
+
+export const removeCandidatesFromArray = <T>(
+  arrayToRemoveFrom: T[],
+  numbersToRemove: T[]
+): boolean => {
+  const initialLength = arrayToRemoveFrom.length;
+  numbersToRemove.forEach((numToRemove) => {
+    const pos = arrayToRemoveFrom.findIndex((num) => {
+      return num === numToRemove;
+    });
+    // if found
+    if (pos !== -1) {
+      // remove
+      arrayToRemoveFrom.splice(pos, 1);
+    }
+  });
+  return initialLength !== arrayToRemoveFrom.length;
+};

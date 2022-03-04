@@ -14,15 +14,19 @@ import { Block } from './block';
   providedIn: 'root',
 })
 export class NakedOrHiddenNCandidatesService {
-  getNakedOrHiddenNCandidates = () => {
+  getNakedOrHiddenNCandidates = (): boolean => {
+    let changeMade = false;
     for (let i = 1; i < 5; i++) {
-      this.getNakedOrHiddenNCandidatesForANumberOfCandidates(i);
+      if (this.getNakedOrHiddenNCandidatesForANumberOfCandidates(i)) {
+        changeMade = true;
+      }
     }
+    return changeMade;
   };
 
   getNakedOrHiddenNCandidatesForANumberOfCandidates = (
     NumberOfCandidates: number
-  ) => {
+  ): boolean => {
     let changeMade = false;
     getIndexArray().forEach((index) => {
       const rows = getRowOfCells(index);
@@ -47,6 +51,7 @@ export class NakedOrHiddenNCandidatesService {
         changeMade = true;
       }
     });
+    return changeMade;
   };
 
   getNakedOrHiddenNCandidatesInAHouse = (
