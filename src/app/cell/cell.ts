@@ -42,9 +42,6 @@ export class Cell {
   };
 
   removeSeenCandidates = () => {
-    if (this.rowIndex === 4 && this.columnIndex === 8) {
-      console.log('');
-    }
     const row: Cell[] = getRowOfCells(this.rowIndex);
     row.forEach((cell) => {
       cell.removeCandidate(this.digit);
@@ -118,6 +115,7 @@ export class Cell {
       }
       this.candidates = temp;
     });
+    this.checkForSingleCandidate();
     return changeMade;
   };
 

@@ -54,10 +54,10 @@ export class AppService {
   };
 
   processCells = (findCandidates: boolean) => {
-    let changeMadeFindPairsOfPairs = true;
-    let changeMadeFindSingleCandidate = true;
+    //let changeMadeFindPairsOfPairs = true;
+    // let changeMadeFindSingleCandidate = true;
     let changeMadeFindBlockIntersections = true;
-    let changeMadeNakedSingles = true;
+    //  let changeMadeNakedSingles = true;
     let changeMadeNakedOrHiddenNCandidates = true;
     if (findCandidates) {
       this.findCandidates();
@@ -72,7 +72,7 @@ export class AppService {
       // changeMadeFindPairsOfPairs = this.pairsOfPairsService.findPairsOfPairs();
       // changeMadeFindSingleCandidate =
       //   this.findSingleCandidateService.findSingleCandidate();
-      // changeMadeNakedSingles = this.nakedSinglesService.checkForNakedSingles();
+      //  changeMadeNakedSingles = this.nakedSinglesService.checkForNakedSingles();
       changeMadeFindBlockIntersections =
         this.blockIntersectionsService.findBlockIntersections();
       changeMadeNakedOrHiddenNCandidates =

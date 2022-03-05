@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {
   candidateFoundinHouse,
   digitFoundinArray,
-  digitFoundinHouse,
   getDigitArray,
   getIndexArray,
   removeCandidatesFromArray,
@@ -59,6 +58,7 @@ export class BlockIntersectionsService {
             if (removeCandidatesFromArray(cell.candidates, [digit])) {
               changeMade = true;
             }
+            cell.checkForSingleCandidate();
           });
         }
 
@@ -68,6 +68,7 @@ export class BlockIntersectionsService {
             if (removeCandidatesFromArray(cell.candidates, [digit])) {
               changeMade = true;
             }
+            cell.checkForSingleCandidate();
           });
         }
       }
