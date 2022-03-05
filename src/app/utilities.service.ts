@@ -79,6 +79,21 @@ export const digitFoundinHouse = (house: Cell[], digit: digitType): boolean => {
   return found;
 };
 
+export const candidateFoundinHouse = (
+  house: Cell[],
+  pCandidate: digitType
+): boolean => {
+  let found = false;
+  house.forEach((cell) => {
+    cell.candidates.forEach((candidate) => {
+      if (candidate === pCandidate) {
+        found = true;
+      }
+    });
+  });
+  return found;
+};
+
 export const digitFoundinArray = (
   digit: digitType,
   digits: digitType[]

@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import {
+  candidateFoundinHouse,
   digitFoundinArray,
   digitFoundinHouse,
   getDigitArray,
   getIndexArray,
   removeCandidatesFromArray,
 } from './utilities.service';
-import { digitType, indexType } from './definitions';
-import { Block } from './block';
-import { Cell } from './cell/cell';
 import { Intersection } from './intersection';
 import { Row } from './row';
 
@@ -24,7 +22,7 @@ export class BlockIntersectionsService {
     // get all row and block intersections
     getIndexArray().forEach((rowIndex) => {
       const row = new Row(rowIndex);
-      row.blocks.forEach((block) => {
+      row.intersectingBlocks.forEach((block) => {
         const intersection = new Intersection(row, true, block);
         if (this.analyseBlockIntersectionSets(intersection)) {
           changeMade = true;
@@ -56,7 +54,7 @@ export class BlockIntersectionsService {
         // then remove the digit from candidates in the other partial house
 
         // first partial house
-        if (!digitFoundinHouse(intersection.partialHouse1, digit)) {
+        if (!candidateFoundinHouse(intersection.partialHouse1, digit)) {
           intersection.partialHouse2.forEach((cell) => {
             if (removeCandidatesFromArray(cell.candidates, [digit])) {
               changeMade = true;
@@ -65,7 +63,7 @@ export class BlockIntersectionsService {
         }
 
         // second partial house
-        if (!digitFoundinHouse(intersection.partialHouse2, digit)) {
+        if (!candidateFoundinHouse(intersection.partialHouse2, digit)) {
           intersection.partialHouse1.forEach((cell) => {
             if (removeCandidatesFromArray(cell.candidates, [digit])) {
               changeMade = true;

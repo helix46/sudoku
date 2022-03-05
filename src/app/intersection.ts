@@ -18,7 +18,7 @@ export class Intersection {
       }
     });
     block.cells.forEach((cell) => {
-      if (!cell.existsIn(block.cells)) {
+      if (!cell.existsIn(house.cells)) {
         this.partialHouse2.push(cell);
       }
     });
